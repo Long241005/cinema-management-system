@@ -1,11 +1,11 @@
 import javax.swing.SwingUtilities;
 
-import ui.MainFrame;
+import ui.MainFrameNew;
 
 public class App {
 	public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            MainFrame frame = new MainFrame();
+            MainFrameNew frame = new MainFrameNew();
             frame.setVisible(true);
         });
     }
