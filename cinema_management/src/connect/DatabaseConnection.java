@@ -1,33 +1,35 @@
 package connect;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
 public class DatabaseConnection {
-	private static DatabaseConnection instance;
+    private static DatabaseConnection instance;
     private Connection connection;
 
-    // Cấu hình kết nối SQL Server
+    // Cấu hình kết nối PostgreSQL
     private static final String SERVER = "localhost";
-    private static final String PORT = "1433";
-    private static final String DATABASE = "CinemaDB";
+    private static final String PORT = "5432";
+    private static final String DATABASE = "cinema_db";
     private static final String USER = "sa";
     private static final String PASSWORD = "sapassword"; // Thay đổi password của bạn
     private static final String JDBC_URL = String.format(
-            "jdbc:sqlserver://%s:%s;databaseName=%s;trustServerCertificate=true",
+            "jdbc:postgresql://%s:%s/%s",
             SERVER, PORT, DATABASE
     );
 
     private DatabaseConnection() {
         try {
-            // Load SQL Server JDBC Driver
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            // Load PostgreSQL JDBC Driver
+            Class.forName("org.postgresql.Driver");
             this.connection = DriverManager.getConnection(JDBC_URL, USER, PASSWORD);
-            System.out.println("✓ Kết nối SQL Server thành công");
+            System.out.println("✓ Kết nối PostgreSQL thành công");
         } catch (ClassNotFoundException e) {
-            System.err.println("✗ Không tìm thấy SQL Server JDBC Driver");
+            System.err.println("✗ Không tìm thấy PostgreSQL JDBC Driver");
             e.printStackTrace();
         } catch (SQLException e) {
-            System.err.println("✗ Lỗi kết nối SQL Server: " + e.getMessage());
+            System.err.println("✗ Lỗi kết nối PostgreSQL: " + e.getMessage());
             e.printStackTrace();
         }
     }
