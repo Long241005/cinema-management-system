@@ -1,57 +1,45 @@
 package entity;
+
 import java.io.Serializable;
-import java.time.LocalDate;
-public class KhachHang implements Serializable{
-	 private int maKhachHang;
-	    private String hoTen;
-	    private String email;
-	    private String soDienThoai;
-	    private String mucThanhVien; // BRONZE, SILVER, GOLD, PLATINUM
-	    private int diemTichLuy;
-	    private LocalDate ngayDangKy;
-	    private String trangThai; // ACTIVE, INACTIVE
 
-	    public KhachHang() {}
+/**
+ * Lớp đại diện cho Khách Hàng
+ */
+public class KhachHang implements Serializable {
+    private String maKH;
+    private String tenKhachHang;
+    private String SDT;
+    private String Email;
+    private int diemTichLuy;
 
-	    public KhachHang(int maKhachHang, String hoTen, String email, String soDienThoai,
-	                    String mucThanhVien, int diemTichLuy, LocalDate ngayDangKy, String trangThai) {
-	        this.maKhachHang = maKhachHang;
-	        this.hoTen = hoTen;
-	        this.email = email;
-	        this.soDienThoai = soDienThoai;
-	        this.mucThanhVien = mucThanhVien;
-	        this.diemTichLuy = diemTichLuy;
-	        this.ngayDangKy = ngayDangKy;
-	        this.trangThai = trangThai;
-	    }
+    public KhachHang() {}
 
-	    // Getters and Setters
-	    public int getMaKhachHang() { return maKhachHang; }
-	    public void setMaKhachHang(int maKhachHang) { this.maKhachHang = maKhachHang; }
+    public KhachHang(String maKH, String tenKhachHang, String SDT, String Email, int diemTichLuy) {
+        this.maKH = maKH;
+        this.tenKhachHang = tenKhachHang;
+        this.SDT = SDT;
+        this.Email = Email;
+        this.diemTichLuy = diemTichLuy;
+    }
 
-	    public String getHoTen() { return hoTen; }
-	    public void setHoTen(String hoTen) { this.hoTen = hoTen; }
+    // Getters and Setters
+    public String getMaKH() { return maKH; }
+    public void setMaKH(String maKH) { this.maKH = maKH; }
 
-	    public String getEmail() { return email; }
-	    public void setEmail(String email) { this.email = email; }
+    public String getTenKhachHang() { return tenKhachHang; }
+    public void setTenKhachHang(String tenKhachHang) { this.tenKhachHang = tenKhachHang; }
 
-	    public String getSoDienThoai() { return soDienThoai; }
-	    public void setSoDienThoai(String soDienThoai) { this.soDienThoai = soDienThoai; }
+    public String getSDT() { return SDT; }
+    public void setSDT(String SDT) { this.SDT = SDT; }
 
-	    public String getMucThanhVien() { return mucThanhVien; }
-	    public void setMucThanhVien(String mucThanhVien) { this.mucThanhVien = mucThanhVien; }
+    public String getEmail() { return Email; }
+    public void setEmail(String Email) { this.Email = Email; }
 
-	    public int getDiemTichLuy() { return diemTichLuy; }
-	    public void setDiemTichLuy(int diemTichLuy) { this.diemTichLuy = diemTichLuy; }
+    public int getDiemTichLuy() { return diemTichLuy; }
+    public void setDiemTichLuy(int diemTichLuy) { this.diemTichLuy = diemTichLuy; }
 
-	    public LocalDate getNgayDangKy() { return ngayDangKy; }
-	    public void setNgayDangKy(LocalDate ngayDangKy) { this.ngayDangKy = ngayDangKy; }
-
-	    public String getTrangThai() { return trangThai; }
-	    public void setTrangThai(String trangThai) { this.trangThai = trangThai; }
-
-	    @Override
-	    public String toString() {
-	        return hoTen + " (" + mucThanhVien + ")";
-	    }
+    @Override
+    public String toString() {
+        return tenKhachHang;
+    }
 }

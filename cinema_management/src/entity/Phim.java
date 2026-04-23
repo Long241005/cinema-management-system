@@ -1,42 +1,44 @@
 package entity;
+
 import java.io.Serializable;
+import java.time.LocalDate;
+
+/**
+ * Lớp đại diện cho Phim
+ */
 public class Phim implements Serializable {
-    private int maPhim;
+    private String maPhim;
     private String tenPhim;
-    private String daoClac;
+    private String daoDien;
     private String theLoai;
-    private int thoiLuong; // Thời lượng (phút)
-    private String ngonNgu;
+    private int thoiLuong; // Phút
+    private LocalDate ngayKhoiChieu;
     private String moTa;
-    private String urlPoster;
-    private double danhGia;
 
     // Constructor mặc định
     public Phim() {}
 
     // Constructor đầy đủ
-    public Phim(int maPhim, String tenPhim, String daoClac, String theLoai,
-                int thoiLuong, String ngonNgu, String moTa, String urlPoster, double danhGia) {
+    public Phim(String maPhim, String tenPhim, String daoDien, String theLoai,
+                int thoiLuong, LocalDate ngayKhoiChieu, String moTa) {
         this.maPhim = maPhim;
         this.tenPhim = tenPhim;
-        this.daoClac = daoClac;
+        this.daoDien = daoDien;
         this.theLoai = theLoai;
         this.thoiLuong = thoiLuong;
-        this.ngonNgu = ngonNgu;
+        this.ngayKhoiChieu = ngayKhoiChieu;
         this.moTa = moTa;
-        this.urlPoster = urlPoster;
-        this.danhGia = danhGia;
     }
 
     // Getters and Setters
-    public int getMaPhim() { return maPhim; }
-    public void setMaPhim(int maPhim) { this.maPhim = maPhim; }
+    public String getMaPhim() { return maPhim; }
+    public void setMaPhim(String maPhim) { this.maPhim = maPhim; }
 
     public String getTenPhim() { return tenPhim; }
     public void setTenPhim(String tenPhim) { this.tenPhim = tenPhim; }
 
-    public String getDaoClac() { return daoClac; }
-    public void setDaoClac(String daoClac) { this.daoClac = daoClac; }
+    public String getDaoDien() { return daoDien; }
+    public void setDaoDien(String daoDien) { this.daoDien = daoDien; }
 
     public String getTheLoai() { return theLoai; }
     public void setTheLoai(String theLoai) { this.theLoai = theLoai; }
@@ -44,28 +46,20 @@ public class Phim implements Serializable {
     public int getThoiLuong() { return thoiLuong; }
     public void setThoiLuong(int thoiLuong) { this.thoiLuong = thoiLuong; }
 
-    public String getNgonNgu() { return ngonNgu; }
-    public void setNgonNgu(String ngonNgu) { this.ngonNgu = ngonNgu; }
+    public LocalDate getNgayKhoiChieu() { return ngayKhoiChieu; }
+    public void setNgayKhoiChieu(LocalDate ngayKhoiChieu) { this.ngayKhoiChieu = ngayKhoiChieu; }
 
     public String getMoTa() { return moTa; }
     public void setMoTa(String moTa) { this.moTa = moTa; }
 
-    public String getUrlPoster() { return urlPoster; }
-    public void setUrlPoster(String urlPoster) { this.urlPoster = urlPoster; }
-
-    public double getDanhGia() { return danhGia; }
-    public void setDanhGia(double danhGia) { this.danhGia = danhGia; }
-
     @Override
     public String toString() {
         return "Phim{" +
-                "maPhim=" + maPhim +
+                "maPhim='" + maPhim + '\'' +
                 ", tenPhim='" + tenPhim + '\'' +
-                ", daoClac='" + daoClac + '\'' +
+                ", daoDien='" + daoDien + '\'' +
                 ", theLoai='" + theLoai + '\'' +
                 ", thoiLuong=" + thoiLuong +
-                ", ngonNgu='" + ngonNgu + '\'' +
-                ", danhGia=" + danhGia +
                 '}';
     }
 }

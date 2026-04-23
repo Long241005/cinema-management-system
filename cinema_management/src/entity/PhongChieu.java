@@ -6,46 +6,35 @@ import java.io.Serializable;
  * Lớp đại diện cho Phòng Chiếu
  */
 public class PhongChieu implements Serializable {
-    private int maPhongChieu;
-    private String tenPhongChieu;
-    private int tongSoGhe;
-    private String viTri;
-    private String dinhDang; // 2D, 3D, IMAX, v.v.
-    private String trangThai; // ACTIVE, MAINTENANCE, CLOSED
+    private String maPhong;
+    private String tenPhong;
+    private int soGhe;
+    private String loaiPhong; // 2D, 3D, IMAX
 
     public PhongChieu() {}
 
-    public PhongChieu(int maPhongChieu, String tenPhongChieu, int tongSoGhe, 
-                   String viTri, String dinhDang, String trangThai) {
-        this.maPhongChieu = maPhongChieu;
-        this.tenPhongChieu = tenPhongChieu;
-        this.tongSoGhe = tongSoGhe;
-        this.viTri = viTri;
-        this.dinhDang = dinhDang;
-        this.trangThai = trangThai;
+    public PhongChieu(String maPhong, String tenPhong, int soGhe, String loaiPhong) {
+        this.maPhong = maPhong;
+        this.tenPhong = tenPhong;
+        this.soGhe = soGhe;
+        this.loaiPhong = loaiPhong;
     }
 
     // Getters and Setters
-    public int getMaPhongChieu() { return maPhongChieu; }
-    public void setMaPhongChieu(int maPhongChieu) { this.maPhongChieu = maPhongChieu; }
+    public String getMaPhong() { return maPhong; }
+    public void setMaPhong(String maPhong) { this.maPhong = maPhong; }
 
-    public String getTenPhongChieu() { return tenPhongChieu; }
-    public void setTenPhongChieu(String tenPhongChieu) { this.tenPhongChieu = tenPhongChieu; }
+    public String getTenPhong() { return tenPhong; }
+    public void setTenPhong(String tenPhong) { this.tenPhong = tenPhong; }
 
-    public int getTongSoGhe() { return tongSoGhe; }
-    public void setTongSoGhe(int tongSoGhe) { this.tongSoGhe = tongSoGhe; }
+    public int getSoGhe() { return soGhe; }
+    public void setSoGhe(int soGhe) { this.soGhe = soGhe; }
 
-    public String getViTri() { return viTri; }
-    public void setViTri(String viTri) { this.viTri = viTri; }
-
-    public String getDinhDang() { return dinhDang; }
-    public void setDinhDang(String dinhDang) { this.dinhDang = dinhDang; }
-
-    public String getTrangThai() { return trangThai; }
-    public void setTrangThai(String trangThai) { this.trangThai = trangThai; }
+    public String getLoaiPhong() { return loaiPhong; }
+    public void setLoaiPhong(String loaiPhong) { this.loaiPhong = loaiPhong; }
 
     @Override
     public String toString() {
-        return tenPhongChieu + " (" + dinhDang + ")";
+        return tenPhong + " (" + loaiPhong + ")";
     }
 }

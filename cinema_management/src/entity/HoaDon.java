@@ -1,72 +1,93 @@
 package entity;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
-/**
- * Lớp đại diện cho Hóa Đơn
- */
 public class HoaDon implements Serializable {
-    private int maHoaDon;
-    private int maKhachHang;
-    private int maNhanVien;
-    private LocalDateTime ngayHoaDon;
-    private double tongTienHang;
-    private double soTienGiam;
-    private double tongTien;
-    private String hinhThucThanhToan; // CASH, CREDIT_CARD, DEBIT_CARD, ONLINE
-    private String trangThai; // PAID, PENDING, CANCELLED
+	private String maHoaDon;
+	private NhanVien nhanVien; // Thay String maNV
+	private KhachHang khachHang; // Thay String maKH
+	private KhuyenMai khuyenMai; // Thay String maKM
+	private Thue thue; // Thay String maThue
+	private LocalDate ngayLap;
+	private BigDecimal tongTien;
 
-    public HoaDon() {}
+	public HoaDon() {
+	}
 
-    public HoaDon(int maHoaDon, int maKhachHang, int maNhanVien, LocalDateTime ngayHoaDon,
-                   double tongTienHang, double soTienGiam, double tongTien,
-                   String hinhThucThanhToan, String trangThai) {
-        this.maHoaDon = maHoaDon;
-        this.maKhachHang = maKhachHang;
-        this.maNhanVien = maNhanVien;
-        this.ngayHoaDon = ngayHoaDon;
-        this.tongTienHang = tongTienHang;
-        this.soTienGiam = soTienGiam;
-        this.tongTien = tongTien;
-        this.hinhThucThanhToan = hinhThucThanhToan;
-        this.trangThai = trangThai;
-    }
+	public HoaDon(String maHoaDon, NhanVien nhanVien, KhachHang khachHang, KhuyenMai khuyenMai, Thue thue,
+			LocalDate ngayLap, BigDecimal tongTien) {
+		this.maHoaDon = maHoaDon;
+		this.nhanVien = nhanVien;
+		this.khachHang = khachHang;
+		this.khuyenMai = khuyenMai;
+		this.thue = thue;
+		this.ngayLap = ngayLap;
+		this.tongTien = tongTien;
+	}
 
-    // Getters and Setters
-    public int getMaHoaDon() { return maHoaDon; }
-    public void setMaHoaDon(int maHoaDon) { this.maHoaDon = maHoaDon; }
 
-    public int getMaKhachHang() { return maKhachHang; }
-    public void setMaKhachHang(int maKhachHang) { this.maKhachHang = maKhachHang; }
+	public String getMaHoaDon() {
+		return maHoaDon;
+	}
 
-    public int getMaNhanVien() { return maNhanVien; }
-    public void setMaNhanVien(int maNhanVien) { this.maNhanVien = maNhanVien; }
+	public void setMaHoaDon(String maHoaDon) {
+		this.maHoaDon = maHoaDon;
+	}
 
-    public LocalDateTime getNgayHoaDon() { return ngayHoaDon; }
-    public void setNgayHoaDon(LocalDateTime ngayHoaDon) { this.ngayHoaDon = ngayHoaDon; }
+	public NhanVien getNhanVien() {
+		return nhanVien;
+	}
 
-    public double getTongTienHang() { return tongTienHang; }
-    public void setTongTienHang(double tongTienHang) { this.tongTienHang = tongTienHang; }
+	public void setNhanVien(NhanVien nhanVien) {
+		this.nhanVien = nhanVien;
+	}
 
-    public double getSoTienGiam() { return soTienGiam; }
-    public void setSoTienGiam(double soTienGiam) { this.soTienGiam = soTienGiam; }
+	public KhachHang getKhachHang() {
+		return khachHang;
+	}
 
-    public double getTongTien() { return tongTien; }
-    public void setTongTien(double tongTien) { this.tongTien = tongTien; }
+	public void setKhachHang(KhachHang khachHang) {
+		this.khachHang = khachHang;
+	}
 
-    public String getHinhThucThanhToan() { return hinhThucThanhToan; }
-    public void setHinhThucThanhToan(String hinhThucThanhToan) { this.hinhThucThanhToan = hinhThucThanhToan; }
+	public KhuyenMai getKhuyenMai() {
+		return khuyenMai;
+	}
 
-    public String getTrangThai() { return trangThai; }
-    public void setTrangThai(String trangThai) { this.trangThai = trangThai; }
+	public void setKhuyenMai(KhuyenMai khuyenMai) {
+		this.khuyenMai = khuyenMai;
+	}
 
-    @Override
-    public String toString() {
-        return "HoaDon{" +
-                "maHoaDon=" + maHoaDon +
-                ", tongTien=" + tongTien +
-                ", ngayHoaDon=" + ngayHoaDon +
-                '}';
-    }
+	public Thue getThue() {
+		return thue;
+	}
+
+	public void setThue(Thue thue) {
+		this.thue = thue;
+	}
+
+	public LocalDate getNgayLap() {
+		return ngayLap;
+	}
+
+	public void setNgayLap(LocalDate ngayLap) {
+		this.ngayLap = ngayLap;
+	}
+
+	public BigDecimal getTongTien() {
+		return tongTien;
+	}
+
+	public void setTongTien(BigDecimal tongTien) {
+		this.tongTien = tongTien;
+	}
+
+	@Override
+	public String toString() {
+		return "HoaDon [maHoaDon=" + maHoaDon + ", nhanVien=" + nhanVien + ", khachHang=" + khachHang + ", khuyenMai="
+				+ khuyenMai + ", thue=" + thue + ", ngayLap=" + ngayLap + ", tongTien=" + tongTien + "]";
+	}
+	
 }
