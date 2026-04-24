@@ -8,35 +8,32 @@ public class DatabaseConnection {
     private static DatabaseConnection instance;
     private Connection connection;
 
-    // Cấu hình kết nối PostgreSQL
+    // Cấu hình cho SQL Server
     private static final String SERVER = "localhost";
-    private static final String PORT = "5432";
-    private static final String DATABASE = "cinema_db";
+    private static final String PORT = "1433"; // Cổng mặc định của SQL Server
+    private static final String DATABASE = "RapChieuPhim";
     private static final String USER = "sa";
-    private static final String PASSWORD = "sapassword"; // Thay đổi password của bạn
+    private static final String PASSWORD = "sapassword"; 
+
+    // URL chuẩn cho SQL Server
     private static final String JDBC_URL = String.format(
-            "jdbc:postgresql://%s:%s/%s",
+            "jdbc:sqlserver://%s:%s;databaseName=%s;encrypt=true;trustServerCertificate=true;",
             SERVER, PORT, DATABASE
     );
 
     private DatabaseConnection() {
         try {
-            // Load PostgreSQL JDBC Driver
-            Class.forName("org.postgresql.Driver");
+            // Load SQL Server JDBC Driver
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             this.connection = DriverManager.getConnection(JDBC_URL, USER, PASSWORD);
-            System.out.println("✓ Kết nối PostgreSQL thành công");
+            System.out.println("✓ Kết nối SQL Server thành công!");
         } catch (ClassNotFoundException e) {
-            System.err.println("✗ Không tìm thấy PostgreSQL JDBC Driver");
-            e.printStackTrace();
+            System.err.println("✗ Không tìm thấy SQL Server JDBC Driver. Hãy add file .jar vào thư mục lib!");
         } catch (SQLException e) {
-            System.err.println("✗ Lỗi kết nối PostgreSQL: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("✗ Lỗi kết nối SQL Server: " + e.getMessage());
         }
     }
 
-    /**
-     * Lấy instance duy nhất (Singleton Pattern)
-     */
     public static synchronized DatabaseConnection getInstance() {
         if (instance == null) {
             instance = new DatabaseConnection();
@@ -44,9 +41,6 @@ public class DatabaseConnection {
         return instance;
     }
 
-    /**
-     * Lấy đối tượng Connection
-     */
     public Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
@@ -58,9 +52,6 @@ public class DatabaseConnection {
         return connection;
     }
 
-    /**
-     * Đóng kết nối
-     */
     public void closeConnection() {
         try {
             if (connection != null && !connection.isClosed()) {
