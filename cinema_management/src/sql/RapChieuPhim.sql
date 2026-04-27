@@ -15,7 +15,8 @@ CREATE TABLE Phim (
     daoDien NVARCHAR(100),
     thoiLuong INT, -- Phút
     ngayKhoiChieu DATE,
-    moTa NVARCHAR(MAX)
+    moTa NVARCHAR(MAX),
+	duongDanAnh NVARCHAR(255)
 );
 
 -- 2. Bảng PhongChieu
@@ -122,3 +123,17 @@ CREATE TABLE ChiTietHoaDon (
     FOREIGN KEY (maVe) REFERENCES Ve(maVe)
 );
 GO
+INSERT INTO Phim (maPhim, tenPhim, theLoai, daoDien, thoiLuong, ngayKhoiChieu, moTa, duongDanAnh)
+VALUES 
+('P001', N'Lật Mặt 7: Một Điều Ước', N'Gia đình, Tâm lý', N'Lý Hải', 138, '2024-04-26', N'Câu chuyện về người mẹ già và 5 người con.', 'latmat7.jpg'),
+
+('P002', N'Đất Rừng Phương Nam', N'Hành động, Phiêu lưu', N'Nguyễn Quang Dũng', 110, '2023-10-20', N'Hành trình tìm cha của bé An.', 'datrung.jpg'),
+
+('P003', N'Mai', N'Tâm lý, Tình cảm', N'Trấn Thành', 131, '2024-02-10', N'Câu chuyện về cuộc đời người phụ nữ tên Mai.', 'mai.jpg'),
+
+('P004', N'Avengers: Endgame', N'Hành động, Viễn tưởng', N'Anthony Russo', 181, '2019-04-26', N'Trận chiến cuối cùng của các siêu anh hùng.', 'avengers.jpg'),
+
+('P005', N'Mắt Biếc', N'Lãng mạn', N'Victor Vũ', 117, '2019-12-20', N'Tình yêu đơn phương của Ngạn dành cho Hà Lan.', 'matbiec.jpg');
+GO
+
+select *from Phim

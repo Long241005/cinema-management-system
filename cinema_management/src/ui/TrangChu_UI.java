@@ -585,8 +585,11 @@ public class TrangChu_UI extends JFrame {
     public void hienThiTrangCapNhatPhim(Phim phim) {
         chonMenuTheoTen("Cập nhật phim");
         mainContentPanel.removeAll();
+        
         CapNhatPhim_UI panelCapNhat = new CapNhatPhim_UI();
-        panelCapNhat.chonPhimDeCapNhat(phim.getMaPhim());
+        // Đổ dữ liệu phim đã chọn từ Tra cứu sang Form Cập nhật
+        panelCapNhat.hienThiThongTinPhim(phim); 
+        
         mainContentPanel.add(panelCapNhat, BorderLayout.CENTER);
         mainContentPanel.revalidate();
         mainContentPanel.repaint();
