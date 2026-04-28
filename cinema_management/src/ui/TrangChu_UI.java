@@ -9,6 +9,7 @@ import ui.khachhang.ThongKeKhachHang_UI;
 import ui.khuyenmai.ThongKeKhuyenMai_UI;
 import ui.hoadon.ThongKeHoaDon_UI;
 import ui.hoadon.TraCuuHoaDon_UI;
+import ui.nhanvien.XoaNhanVien_UI;
 import ui.phongchieu.CapNhatPhong_UI;
 import ui.phongchieu.QuanLyPhong_UI;
 import ui.phongchieu.ThemPhong_UI;
@@ -34,7 +35,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import entity.NhanVien;
 
 public class TrangChu_UI extends JFrame {
 
@@ -191,7 +191,7 @@ public class TrangChu_UI extends JFrame {
         themMenuItem("Phòng chiếu", "/IMG/film-roll.png", 
             Arrays.asList("Quản lý phòng chiếu", "Thêm phòng", "Cập nhật phòng"), false);
         themMenuItem("Nhân viên", "/IMG/nhanvien_32px_v2.png", 
-            Arrays.asList("Tra cứu nhân viên", "Thêm nhân viên", "Cập nhật nhân viên"), false);
+            Arrays.asList("Tra cứu nhân viên", "Thêm nhân viên", "Cập nhật nhân viên","Xóa nhân viên"), false);
         themMenuItem("Khách hàng", "/IMG/khachhang_32px_v2.png", 
             Arrays.asList("Tra cứu khách hàng", "Thêm khách hàng", "Cập nhật khách hàng", "Thống kê khách hàng"), false);
         themMenuItem("Hóa đơn", "/IMG/hoadon_32px_v2.png", 
@@ -438,11 +438,7 @@ public class TrangChu_UI extends JFrame {
 
     public void hienThiNoiDung(String tenTab) {
         chonMenuTheoTen(tenTab);
-        
-        if (tenTab.equals("Thêm khách hàng")) {
-            new ThemKhachHang_UI(this, null, null).setVisible(true);
-            return;
-        }
+
         
         if (tenTab.equals("Thêm phòng")) {
             new ThemPhong_UI(this).setVisible(true);
@@ -482,8 +478,14 @@ public class TrangChu_UI extends JFrame {
             case "Cập nhật nhân viên":
                 mainContentPanel.add(new CapNhatNhanVien_UI(), BorderLayout.CENTER);
                 break;
+            case "Xóa nhân viên":
+                mainContentPanel.add(new XoaNhanVien_UI(), BorderLayout.CENTER);
+                break;
             case "Tra cứu khách hàng":
                 mainContentPanel.add(new TraCuuKhachHang_UI(), BorderLayout.CENTER);
+                break;
+            case "Thêm khách hàng":
+                mainContentPanel.add(new ThemKhachHang_UI(), BorderLayout.CENTER);
                 break;
             case "Cập nhật khách hàng":
                 mainContentPanel.add(new CapNhatKhachHang_UI(), BorderLayout.CENTER);

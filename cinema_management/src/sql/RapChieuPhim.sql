@@ -135,5 +135,25 @@ VALUES
 
 ('P005', N'Mắt Biếc', N'Lãng mạn', N'Victor Vũ', 117, '2019-12-20', N'Tình yêu đơn phương của Ngạn dành cho Hà Lan.', 'matbiec.jpg');
 GO
+INSERT INTO NhanVien (maNV, tenNV, gioiTinh, ngaySinh, SDT, email, diaChi, chucVu)
+VALUES
+('NV001', N'Nguyễn Văn An', 1, '1998-03-15', '0901234567', 'an.nguyen@gmail.com', N'Hà Nội', N'Quản lý'),
 
+('NV002', N'Trần Thị Bình', 0, '1999-07-21', '0902345678', 'binh.tran@gmail.com', N'Hồ Chí Minh', N'Nhân viên bán vé'),
+
+('NV003', N'Lê Văn Cường', 1, '1997-11-10', '0903456789', 'cuong.le@gmail.com', N'Đà Nẵng', N'Nhân viên bán vé'),
+
+('NV004', N'Phạm Thị Dung', 0, '2000-01-05', '0904567890', 'dung.pham@gmail.com', N'Hải Phòng', N'Nhân viên bán vé'),
+
+('NV005', N'Hoàng Văn Em', 1, '1996-09-18', '0905678901', 'em.hoang@gmail.com', N'Cần Thơ', N'Quản lý'),
+
+('NV006', N'Võ Thị Giang', 0, '1998-12-30', '0906789012', 'giang.vo@gmail.com', N'Nha Trang', N'Nhân viên bán vé'),
+
+('NV007', N'Đặng Văn Hùng', 1, '1995-06-25', '0907890123', 'hung.dang@gmail.com', N'Bình Dương', N'Nhân viên bán vé'),
+
+('NV008', N'Bùi Thị Lan', 0, '2001-04-14', '0908901234', 'lan.bui@gmail.com', N'Đồng Nai', N'Nhân viên bán vé'),
+
+('NV009', N'Ngô Văn Minh', 1, '1997-08-09', '0909012345', 'minh.ngo@gmail.com', N'Vũng Tàu', N'Nhân viên bán vé'),
+
+('NV010', N'Đỗ Thị Ngọc', 0, '1999-10-27', '0910123456', 'ngoc.do@gmail.com', N'Huế', N'Nhân viên bán vé');
 select *from Phim
