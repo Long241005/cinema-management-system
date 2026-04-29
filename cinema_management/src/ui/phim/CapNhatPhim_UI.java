@@ -10,6 +10,8 @@ import javax.swing.border.*;
 import javax.swing.table.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
+import java.time.format.DateTimeFormatter;
+
 import entity.Phim;
 import dao.Phim_DAO;
 
@@ -64,13 +66,19 @@ public class CapNhatPhim_UI extends JPanel {
         txtTheLoai = taoInput(pnlForm, "Thể loại:");
         txtThoiLuong = taoInput(pnlForm, "Thời lượng (phút):");
         txtNgay = taoInput(pnlForm, "Ngày khởi chiếu (yyyy-MM-dd):");
+        
 
         // Nút hành động bên phải
         JPanel pnlRightBtns = new JPanel();
         pnlRightBtns.setLayout(new BoxLayout(pnlRightBtns, BoxLayout.Y_AXIS));
         pnlRightBtns.setOpaque(false);
         JButton btnUpdate = taoNutHanhDong("Cập nhật", MAU_VANG);
-        JButton btnDelete = taoNutHanhDong("Xóa", new Color(244, 67, 54));
+        JButton btnDelete = taoNutHanhDong("     Xóa    ", new Color(244, 67, 54));
+        
+        btnUpdate.addActionListener(e -> xuLyCapNhat());
+
+        // --- GÁN SỰ KIỆN NÚT XÓA ---
+        btnDelete.addActionListener(e -> xuLyXoa());
         
         pnlRightBtns.add(Box.createVerticalGlue());
         pnlRightBtns.add(btnUpdate);
@@ -94,6 +102,9 @@ public class CapNhatPhim_UI extends JPanel {
         JScrollPane scroll = new JScrollPane(table);
         scroll.setPreferredSize(new Dimension(0, 250));
         tuyChinhScrollBar(scroll);
+        
+        scroll.getViewport().setBackground(new Color(31, 32, 44)); // Cùng màu với table
+        scroll.setBorder(BorderFactory.createEmptyBorder());
 
         pnlBottom.add(new JLabel("DANH SÁCH PHIM ĐANG KHỞI CHIẾU") {{ 
             setForeground(MAU_NHAN_XAM); 
@@ -139,7 +150,9 @@ public class CapNhatPhim_UI extends JPanel {
         txtDaoDien.setText(p.getDaoDien());
         txtTheLoai.setText(p.getTheLoai());
         txtThoiLuong.setText(String.valueOf(p.getThoiLuong()));
-        txtNgay.setText(p.getNgayKhoiChieu().toString());
+      //  txtNgay.setText(p.getNgayKhoiChieu().toString());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        txtNgay.setText(p.getNgayKhoiChieu().format(formatter));
         tenFileAnhHienTai = p.getDuongDanAnh();
 
         // Xử lý load ảnh vuông từ thư mục resources /img/
@@ -197,5 +210,67 @@ public class CapNhatPhim_UI extends JPanel {
                 this.thumbColor = MAU_NHAN_XAM; this.trackColor = MAU_NEN;
             }
         });
+    }
+    private void xuLyXoa() {
+        String ma = txtMa.getText().trim(); // Lấy mã phim đang hiển thị trên form
+        if (ma.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn phim cần xóa!");
+            return;
+        }
+
+        // Hỏi xác nhận trước khi xóa cho chắc ăn
+        int opt = JOptionPane.showConfirmDialog(this, 
+            "Bạn có chắc chắn muốn xóa phim " + ma + " không?", 
+            "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+
+        if (opt == JOptionPane.YES_OPTION) {
+            // GỌI HÀM TỪ DAO Ở ĐÂY
+            if (phimDAO.xoaPhim(ma)) { 
+                JOptionPane.showMessageDialog(this, "Xóa thành công!");
+               // xoaTrangForm(); // Xóa sạch các ô nhập liệu
+                lamMoiBang();   // Load lại danh sách phim dưới bảng
+            } else {
+                JOptionPane.showMessageDialog(this, "Xóa thất bại! Phim có thể đang được sử dụng ở bảng khác.");
+            }
+        }
+    }
+    private void xuLyCapNhat() {
+        String ma = txtMa.getText().trim();
+        if (ma.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn phim từ bảng để cập nhật!");
+            return;
+        }
+
+        try {
+        	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            String ngayStr = txtNgay.getText().trim();
+            java.time.LocalDate ngay = java.time.LocalDate.parse(ngayStr, formatter);
+
+            // 2. Tạo đối tượng Phim để cập nhật
+            Phim p = new Phim(
+                ma,
+                txtTen.getText().trim(),
+                txtDaoDien.getText().trim(),
+                txtTheLoai.getText().trim(),
+                Integer.parseInt(txtThoiLuong.getText().trim()),
+                ngay,
+                "", // Có thể lấy thêm từ JTextArea moTa nếu bạn có
+                tenFileAnhHienTai // Giữ nguyên tên file ảnh cũ trong Database
+            );
+
+            // 3. Gọi DAO để thực thi lệnh UPDATE
+            if (phimDAO.capNhatPhim(p)) {
+                JOptionPane.showMessageDialog(this, "Cập nhật thành công phim " + ma);
+                lamMoiBang(); // Tải lại bảng để thấy dữ liệu mới
+            } else {
+                JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
+            }
+        } catch (java.time.format.DateTimeParseException ex) {
+            JOptionPane.showMessageDialog(this, "Ngày không hợp lệ! Vui lòng nhập đúng định dạng dd/MM/yyyy (VD: 28/04/2026)");
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Thời lượng phải là con số!");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage());
+        }
     }
 }

@@ -7,6 +7,7 @@ import entity.Phim;
 import entity.PhongChieu;
 import ui.khachhang.ThongKeKhachHang_UI;
 import ui.khuyenmai.ThongKeKhuyenMai_UI;
+import ui.ghe.ThemGhe_UI;
 import ui.hoadon.ThongKeHoaDon_UI;
 import ui.hoadon.TraCuuHoaDon_UI;
 import ui.nhanvien.XoaNhanVien_UI;
@@ -190,6 +191,8 @@ public class TrangChu_UI extends JFrame {
             Arrays.asList("Tra cứu phim", "Thêm phim mới", "Cập nhật phim", "Thống kê phim"), false);
         themMenuItem("Phòng chiếu", "/IMG/film-roll.png", 
             Arrays.asList("Quản lý phòng chiếu", "Thêm phòng", "Cập nhật phòng"), false);
+        themMenuItem("Ghế", "/IMG/film-roll.png", // Bạn có thể thay icon khác nếu có
+                Arrays.asList("Tra cứu ghế", "Thêm ghế mới", "Cập nhật ghế"), false);
         themMenuItem("Nhân viên", "/IMG/nhanvien_32px_v2.png", 
             Arrays.asList("Tra cứu nhân viên", "Thêm nhân viên", "Cập nhật nhân viên","Xóa nhân viên"), false);
         themMenuItem("Khách hàng", "/IMG/khachhang_32px_v2.png", 
@@ -468,6 +471,9 @@ public class TrangChu_UI extends JFrame {
                 break;
             case "Cập nhật phòng":
                 mainContentPanel.add(new CapNhatPhong_UI(), BorderLayout.CENTER);
+                break;
+            case "Thêm ghế mới":
+                mainContentPanel.add(new ThemGhe_UI(), BorderLayout.CENTER);
                 break;
             case "Tra cứu nhân viên":
                 mainContentPanel.add(new TraCuuNhanVien_UI(), BorderLayout.CENTER);
