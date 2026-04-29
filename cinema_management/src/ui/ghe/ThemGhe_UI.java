@@ -1,4 +1,4 @@
-package ui.phongchieu;
+package ui.ghe;
 
 import java.awt.*;
 import java.util.List;

@@ -7,17 +7,19 @@ public class Ghe implements Serializable {
 	private PhongChieu phongChieu; // Thay String maPhong
 	private String hang;
 	private int soGhe;
+	private String loaiGhe;
 	private String trangThai;
 
 	public Ghe() {
 	}
 
-	public Ghe(String maGhe, PhongChieu phongChieu, String hang, int soGhe, String trangThai) {
+	public Ghe(String maGhe, PhongChieu phongChieu, String hang, int soGhe, String loaiGhe, String trangThai) {
 		super();
 		this.maGhe = maGhe;
 		this.phongChieu = phongChieu;
 		this.hang = hang;
 		this.soGhe = soGhe;
+		this.loaiGhe = loaiGhe;
 		this.trangThai = trangThai;
 	}
 
@@ -61,10 +63,18 @@ public class Ghe implements Serializable {
 		this.trangThai = trangThai;
 	}
 
+	public String getLoaiGhe() {
+		return loaiGhe;
+	}
+
+	public void setLoaiGhe(String loaiGhe) {
+		this.loaiGhe = loaiGhe;
+	}
+
 	@Override
 	public String toString() {
 		return "Ghe [maGhe=" + maGhe + ", phongChieu=" + phongChieu + ", hang=" + hang + ", soGhe=" + soGhe
-				+ ", trangThai=" + trangThai + "]";
+				+ ", loaiGhe=" + loaiGhe + ", trangThai=" + trangThai + "]";
 	}
 
 }
