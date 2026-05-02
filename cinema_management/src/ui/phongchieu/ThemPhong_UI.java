@@ -1,159 +1,151 @@
 package ui.phongchieu;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.util.List;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.table.DefaultTableModel;
+import dao.PhongChieu_DAO;
+import entity.PhongChieu;
 
-public class ThemPhong_UI extends JDialog {
+public class ThemPhong_UI extends JPanel {
+    private final Color BG = new Color(48, 52, 56);
+    private final Color INPUT_BG = new Color(60, 64, 68);
+    private final Color TEXT = Color.WHITE;
+    private final Color BORDER = new Color(70, 72, 87);
+    private final Color BLUE = new Color(33, 150, 243);
 
-    // ========== COMPONENTS (Khớp với bảng PhongChieu trong SQL) ==========
-    private JTextField txtMaPhong;
-    private JTextField txtTenPhong;
-    private JTextField txtSoGhe;
-    private JComboBox<String> cmbLoaiPhong; // 2D, 3D, IMAX
+    private JTextField txtMaPhong, txtTenPhong, txtSoGhe;
+    private JComboBox<String> cboLoaiPhong;
+    private JTable table;
+    private DefaultTableModel model;
+    private JButton btnThem, btnLamMoi;
+    private PhongChieu_DAO dao;
 
-    // ========== MÀU SẮC & FONT (Đồng bộ với các trang khác của bạn) ==========
-    private final Color MAU_NEN = new Color(48, 52, 56);
-    private final Color MAU_NEN_INPUT = new Color(60, 64, 68);
-    private final Color MAU_CHU_TRANG = Color.WHITE;
-    private final Color MAU_NUT_THEM = new Color(76, 175, 80);
-    private final Color MAU_NUT_THEM_HOVER = new Color(39, 174, 96);
-    private final Color MAU_NUT_HUY = new Color(231, 76, 60);
-    private final Color MAU_NUT_HUY_HOVER = new Color(192, 57, 43);
-
-    public ThemPhong_UI(JFrame parent) {
-        super(parent, "Thêm phòng chiếu mới", true);
-        
-        khoiTaoGiaoDien();
-        
-        // Giả lập mã phòng tự động
-        txtMaPhong.setText("PC" + System.currentTimeMillis() % 1000);
-        
-        setSize(500, 500);
-        setLocationRelativeTo(parent);
-        setResizable(false);
+    public ThemPhong_UI() {
+        dao = new PhongChieu_DAO();
+        initUI();
+        taoMaTuDong();
+        loadData();
     }
 
-    private void khoiTaoGiaoDien() {
-        JPanel mainPanel = new JPanel(new BorderLayout(0, 20));
-        mainPanel.setBackground(MAU_NEN);
-        mainPanel.setBorder(new EmptyBorder(30, 40, 30, 40));
+    private void initUI() {
+        setLayout(new BorderLayout(0, 20));
+        setBackground(BG);
+        setBorder(new EmptyBorder(20, 30, 20, 30));
 
-        // Tiêu đề
-        JLabel lblTieuDe = new JLabel("THÊM PHÒNG CHIẾU", SwingConstants.CENTER);
-        lblTieuDe.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        lblTieuDe.setForeground(MAU_CHU_TRANG);
-        mainPanel.add(lblTieuDe, BorderLayout.NORTH);
+        JLabel lblTitle = new JLabel("THÊM PHÒNG CHIẾU", SwingConstants.CENTER);
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 30));
+        lblTitle.setForeground(TEXT);
+        add(lblTitle, BorderLayout.NORTH);
 
-        // Form nhập liệu
-        JPanel formPanel = new JPanel();
-        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
-        formPanel.setBackground(MAU_NEN);
+        JPanel content = new JPanel(new BorderLayout(20, 20));
+        content.setOpaque(false);
 
-        txtMaPhong = taoField(formPanel, "Mã phòng:");
-        txtMaPhong.setEditable(false); // Không cho sửa mã
+        // FORM BÊN TRÁI
+        JPanel left = new JPanel(new BorderLayout(0, 20));
+        left.setOpaque(false);
+        left.setPreferredSize(new Dimension(420, 0));
+
+        JPanel form = new JPanel(new GridLayout(5, 1, 0, 12));
+        form.setOpaque(false);
+
+        txtMaPhong = createInput(form, "Mã phòng:");
+        txtMaPhong.setEditable(false);
+        txtTenPhong = createInput(form, "Tên phòng:");
+        txtSoGhe = createInput(form, "Số ghế:");
+        cboLoaiPhong = createCombo(form, "Loại phòng:", new String[]{"2D", "3D", "IMAX", "4DX"});
+
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
+        actions.setOpaque(false);
+        btnThem = createButton("Thêm phòng");
+        btnLamMoi = createButton("Làm mới");
+        actions.add(btnThem);
+        actions.add(btnLamMoi);
+
+        left.add(form, BorderLayout.CENTER);
+        left.add(actions, BorderLayout.SOUTH);
+
+        // BẢNG BÊN PHẢI
+        JPanel right = new JPanel(new BorderLayout(0, 15));
+        right.setOpaque(false);
+        model = new DefaultTableModel(new String[]{"Mã Phòng", "Tên Phòng", "Số Ghế", "Loại"}, 0);
+        table = new JTable(model);
+        thietKeBang(table);
         
-        txtTenPhong = taoField(formPanel, "Tên phòng:");
-        txtSoGhe = taoField(formPanel, "Số lượng ghế:");
-        
-        // ComboBox loại phòng (2D, 3D, IMAX theo SQL)
-        cmbLoaiPhong = taoComboBox(formPanel, "Loại phòng:", new String[]{"2D", "3D", "IMAX"});
+        right.add(new JLabel("Danh sách phòng hiện có") {{ setForeground(TEXT); setFont(new Font("Segoe UI", Font.BOLD, 18)); }}, BorderLayout.NORTH);
+        right.add(new JScrollPane(table), BorderLayout.CENTER);
 
-        mainPanel.add(formPanel, BorderLayout.CENTER);
+        content.add(left, BorderLayout.WEST);
+        content.add(right, BorderLayout.CENTER);
+        add(content, BorderLayout.CENTER);
 
-        // Nút bấm
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
-        btnPanel.setBackground(MAU_NEN);
-
-        JButton btnThem = taoNut("Thêm", MAU_NUT_THEM, MAU_NUT_THEM_HOVER);
-        JButton btnHuy = taoNut("Hủy", MAU_NUT_HUY, MAU_NUT_HUY_HOVER);
-
-        btnThem.addActionListener(e -> xuLyThem());
-        btnHuy.addActionListener(e -> dispose());
-
-        btnPanel.add(btnThem);
-        btnPanel.add(btnHuy);
-        mainPanel.add(btnPanel, BorderLayout.SOUTH);
-
-        add(mainPanel);
+        btnThem.addActionListener(e -> themPhong());
+        btnLamMoi.addActionListener(e -> { clearForm(); taoMaTuDong(); });
     }
 
-    private JTextField taoField(JPanel panel, String labelText) {
-        JLabel label = new JLabel(labelText);
-        label.setForeground(MAU_CHU_TRANG);
-        label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        
-        JTextField textField = new JTextField();
-        textField.setBackground(MAU_NEN_INPUT);
-        textField.setForeground(MAU_CHU_TRANG);
-        textField.setCaretColor(MAU_CHU_TRANG);
-        textField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(70, 72, 87)),
-                new EmptyBorder(5, 10, 5, 10)));
-        textField.setPreferredSize(new Dimension(350, 35));
-        textField.setMaximumSize(new Dimension(350, 35));
-
-        panel.add(label);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(textField);
-        panel.add(Box.createVerticalStrut(15));
-        return textField;
+    private JTextField createInput(JPanel panel, String label) {
+        JPanel wrap = new JPanel(new BorderLayout(5, 6));
+        wrap.setOpaque(false);
+        JLabel lbl = new JLabel(label); lbl.setForeground(TEXT);
+        JTextField txt = new JTextField();
+        txt.setBackground(INPUT_BG); txt.setForeground(TEXT); txt.setBorder(new LineBorder(BORDER));
+        txt.setPreferredSize(new Dimension(250, 40));
+        wrap.add(lbl, BorderLayout.NORTH); wrap.add(txt, BorderLayout.CENTER);
+        panel.add(wrap);
+        return txt;
     }
 
-    private JComboBox<String> taoComboBox(JPanel panel, String labelText, String[] items) {
-        JLabel label = new JLabel(labelText);
-        label.setForeground(MAU_CHU_TRANG);
-        label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        
-        JComboBox<String> comboBox = new JComboBox<>(items);
-        comboBox.setBackground(MAU_NEN_INPUT);
-        comboBox.setForeground(MAU_CHU_TRANG);
-        comboBox.setPreferredSize(new Dimension(350, 35));
-        comboBox.setMaximumSize(new Dimension(350, 35));
-
-        panel.add(label);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(comboBox);
-        panel.add(Box.createVerticalStrut(15));
-        return comboBox;
+    private JComboBox<String> createCombo(JPanel panel, String label, String[] items) {
+        JPanel wrap = new JPanel(new BorderLayout(5, 6));
+        wrap.setOpaque(false);
+        JLabel lbl = new JLabel(label); lbl.setForeground(TEXT);
+        JComboBox<String> cbo = new JComboBox<>(items);
+        cbo.setPreferredSize(new Dimension(250, 40));
+        wrap.add(lbl, BorderLayout.NORTH); wrap.add(cbo, BorderLayout.CENTER);
+        panel.add(wrap);
+        return cbo;
     }
 
-    private JButton taoNut(String text, Color bg, Color hover) {
+    private JButton createButton(String text) {
         JButton btn = new JButton(text);
-        btn.setPreferredSize(new Dimension(120, 40));
-        btn.setBackground(bg);
-        btn.setForeground(MAU_CHU_TRANG);
-        btn.setFocusPainted(false);
-        btn.setBorderPainted(false);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) { btn.setBackground(hover); }
-            public void mouseExited(MouseEvent e) { btn.setBackground(bg); }
-        });
+        btn.setPreferredSize(new Dimension(160, 42));
+        btn.setBackground(BLUE); btn.setForeground(TEXT);
         return btn;
     }
 
-    private void xuLyThem() {
-        String ten = txtTenPhong.getText().trim();
-        String soGheStr = txtSoGhe.getText().trim();
+    private void thietKeBang(JTable t) {
+        t.setRowHeight(34);
+        t.setBackground(new Color(31, 32, 44));
+        t.setForeground(TEXT);
+        t.getTableHeader().setBackground(INPUT_BG);
+        t.getTableHeader().setForeground(TEXT);
+    }
 
-        if (ten.isEmpty() || soGheStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
-            return;
-        }
+    private void taoMaTuDong() {
+        String maxMa = dao.getMaPhongLonNhat();
+        int so = 1;
+        if(maxMa != null) so = Integer.parseInt(maxMa.substring(1)) + 1;
+        txtMaPhong.setText(String.format("P%04d", so));
+    }
 
+    private void loadData() {
+        model.setRowCount(0);
+        List<PhongChieu> ds = dao.docDanhSachPhongChieu();
+        for (PhongChieu p : ds) model.addRow(new Object[]{p.getMaPhong(), p.getTenPhong(), p.getSoGhe(), p.getLoaiPhong()});
+    }
+
+    private void themPhong() {
         try {
-            int soGhe = Integer.parseInt(soGheStr);
-            if (soGhe <= 0) throw new NumberFormatException();
-            
-            // Tạm thời chỉ thông báo vì chưa dùng DAO
-            JOptionPane.showMessageDialog(this, "Đã thêm phòng: " + ten + " (" + soGhe + " ghế)");
-            dispose();
-            
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Số lượng ghế phải là số nguyên dương!");
-        }
+            PhongChieu p = new PhongChieu(txtMaPhong.getText(), txtTenPhong.getText(), Integer.parseInt(txtSoGhe.getText()), cboLoaiPhong.getSelectedItem().toString());
+            if (dao.themPhongChieu(p)) {
+                JOptionPane.showMessageDialog(this, "Thành công!");
+                loadData(); clearForm(); taoMaTuDong();
+            }
+        } catch (Exception ex) { JOptionPane.showMessageDialog(this, "Dữ liệu không hợp lệ!"); }
+    }
+
+    private void clearForm() {
+        txtTenPhong.setText(""); txtSoGhe.setText(""); cboLoaiPhong.setSelectedIndex(0);
     }
 }

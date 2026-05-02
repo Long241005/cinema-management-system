@@ -123,4 +123,15 @@ public class Ghe_DAO {
             return false;
         }
     }
+    public String layMaLonNhat() {
+        String sql = "SELECT MAX(maGhe) FROM Ghe";
+        try (Connection conn = connect.DatabaseConnection.getInstance().getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getString(1); // Trả về mã lớn nhất, ví dụ "G0050"
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return null;
+    }
 }

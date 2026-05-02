@@ -12,8 +12,9 @@ import ui.hoadon.ThongKeHoaDon_UI;
 import ui.hoadon.TraCuuHoaDon_UI;
 import ui.nhanvien.XoaNhanVien_UI;
 import ui.phongchieu.CapNhatPhong_UI;
-import ui.phongchieu.QuanLyPhong_UI;
+import ui.phongchieu.XoaPhong_UI;
 import ui.phongchieu.ThemPhong_UI;
+import ui.phongchieu.TraCuuPhong_UI;
 import ui.khachhang.CapNhatKhachHang_UI;
 import ui.khachhang.TraCuuKhachHang_UI;
 import ui.khachhang.ThemKhachHang_UI;
@@ -190,7 +191,7 @@ public class TrangChu_UI extends JFrame {
         themMenuItem("Phim", "/IMG/film-roll.png", 
             Arrays.asList("Tra cứu phim", "Thêm phim mới", "Cập nhật phim", "Thống kê phim"), false);
         themMenuItem("Phòng chiếu", "/IMG/film-roll.png", 
-            Arrays.asList("Quản lý phòng chiếu", "Thêm phòng", "Cập nhật phòng"), false);
+            Arrays.asList("Cập nhật phòng", "Thêm phòng", "Tra cứu phòng","Xóa phòng"), false);
         themMenuItem("Ghế", "/IMG/film-roll.png", // Bạn có thể thay icon khác nếu có
                 Arrays.asList("Tra cứu ghế", "Thêm ghế mới", "Cập nhật ghế"), false);
         themMenuItem("Nhân viên", "/IMG/nhanvien_32px_v2.png", 
@@ -443,10 +444,10 @@ public class TrangChu_UI extends JFrame {
         chonMenuTheoTen(tenTab);
 
         
-        if (tenTab.equals("Thêm phòng")) {
-            new ThemPhong_UI(this).setVisible(true);
-            return; 
-        }
+//        if (tenTab.equals("Thêm phòng")) {
+//            new ThemPhong_UI(this).setVisible(true);
+//            return; 
+//        }
         
         mainContentPanel.removeAll();
 
@@ -466,11 +467,17 @@ public class TrangChu_UI extends JFrame {
             case "Thống kê phim":
                 mainContentPanel.add(new ThongKePhim_UI(), BorderLayout.CENTER);
                 break;
-            case "Quản lý phòng chiếu":
-                mainContentPanel.add(new QuanLyPhong_UI(), BorderLayout.CENTER);
+            case "Thêm phòng":
+                mainContentPanel.add(new ThemPhong_UI(), BorderLayout.CENTER); 
                 break;
-            case "Cập nhật phòng":
-                mainContentPanel.add(new CapNhatPhong_UI(), BorderLayout.CENTER);
+            case "Cập nhật phòng": 
+                mainContentPanel.add(new CapNhatPhong_UI(), BorderLayout.CENTER); 
+                break;
+            case "Tra cứu phòng":
+                mainContentPanel.add(new TraCuuPhong_UI(), BorderLayout.CENTER); 
+                break;
+            case "Xóa phòng":
+                mainContentPanel.add(new XoaPhong_UI(), BorderLayout.CENTER); 
                 break;
             case "Thêm ghế mới":
                 mainContentPanel.add(new ThemGhe_UI(), BorderLayout.CENTER);
@@ -603,14 +610,35 @@ public class TrangChu_UI extends JFrame {
         mainContentPanel.repaint();
     }
     
+//    public void hienThiTrangCapNhatPhong(PhongChieu phong) {
+//        mainContentPanel.removeAll();
+//        CapNhatPhong_UI panelCapNhat = new CapNhatPhong_UI();
+//        panelCapNhat.chonPhongDeCapNhat(phong.getMaPhong());
+//        mainContentPanel.add(panelCapNhat, BorderLayout.CENTER);
+//        mainContentPanel.revalidate();
+//        mainContentPanel.repaint();
+//    }
+    
+    
     public void hienThiTrangCapNhatPhong(PhongChieu phong) {
+        // 1. Highlight menu "Cập nhật phòng" bên trái
+        chonMenuTheoTen("Câp nhật phòng"); 
+        
+        // 2. Làm sạch khung nội dung chính
         mainContentPanel.removeAll();
+        
+        // 3. Khởi tạo UI Cập nhật
         CapNhatPhong_UI panelCapNhat = new CapNhatPhong_UI();
-        panelCapNhat.chonPhongDeCapNhat(phong.getMaPhong());
+        
+        // 4. Đổ dữ liệu phòng chiếu vào các ô nhập liệu (Sử dụng phương thức fillData)
+        panelCapNhat.fillData(phong);
+        
+        // 5. Hiển thị lên màn hình
         mainContentPanel.add(panelCapNhat, BorderLayout.CENTER);
         mainContentPanel.revalidate();
         mainContentPanel.repaint();
     }
+    
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new TrangChu_UI().setVisible(true));

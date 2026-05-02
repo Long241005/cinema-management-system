@@ -8,15 +8,22 @@ USE RapChieuPhim;
 GO
 
 -- 1. Bảng Phim
+CREATE TABLE TheLoai (
+    maTheLoai VARCHAR(20) PRIMARY KEY,
+    tenTheLoai NVARCHAR(100) NOT NULL
+);
+
+-- 1. Bảng Phim (Sửa theLoai thành maTheLoai để làm khóa ngoại)
 CREATE TABLE Phim (
     maPhim VARCHAR(20) PRIMARY KEY,
     tenPhim NVARCHAR(255) NOT NULL,
-    theLoai NVARCHAR(100),
+    maTheLoai VARCHAR(20), -- Khóa ngoại trỏ sang bảng TheLoai
     daoDien NVARCHAR(100),
     thoiLuong INT,
     ngayKhoiChieu DATE,
     moTa NVARCHAR(MAX),
-	duongDanAnh NVARCHAR(255)
+    duongDanAnh NVARCHAR(255),
+    FOREIGN KEY (maTheLoai) REFERENCES TheLoai(maTheLoai)
 );
 
 -- 2. Bảng PhongChieu
@@ -125,36 +132,32 @@ CREATE TABLE ChiTietHoaDon (
     FOREIGN KEY (maVe) REFERENCES Ve(maVe)
 );
 GO
-INSERT INTO Phim (maPhim, tenPhim, theLoai, daoDien, thoiLuong, ngayKhoiChieu, moTa, duongDanAnh)
+
+INSERT INTO TheLoai (maTheLoai, tenTheLoai) VALUES 
+('TL0001', N'Hành động'),
+('TL0002', N'Hoạt hình'),
+('TL0003', N'Kinh dị'),
+('TL0004', N'Tâm lý'),
+('TL0005', N'Lãng mạn'),
+('TL0006', N'Gia đình');
+
+INSERT INTO Phim (maPhim, tenPhim, maTheLoai, daoDien, thoiLuong, ngayKhoiChieu, moTa, duongDanAnh)
 VALUES 
-('P001', N'Lật Mặt 7: Một Điều Ước', N'Gia đình, Tâm lý', N'Lý Hải', 138, '2024-04-26', N'Câu chuyện về người mẹ già và 5 người con.', 'latmat7.jpg'),
-
-('P002', N'Đất Rừng Phương Nam', N'Hành động, Phiêu lưu', N'Nguyễn Quang Dũng', 110, '2023-10-20', N'Hành trình tìm cha của bé An.', 'datrung.jpg'),
-
-('P003', N'Mai', N'Tâm lý, Tình cảm', N'Trấn Thành', 131, '2024-02-10', N'Câu chuyện về cuộc đời người phụ nữ tên Mai.', 'mai.jpg'),
-
-('P004', N'Avengers: Endgame', N'Hành động, Viễn tưởng', N'Anthony Russo', 181, '2019-04-26', N'Trận chiến cuối cùng của các siêu anh hùng.', 'avengers.jpg'),
-
-('P005', N'Mắt Biếc', N'Lãng mạn', N'Victor Vũ', 117, '2019-12-20', N'Tình yêu đơn phương của Ngạn dành cho Hà Lan.', 'matbiec.jpg'),
-
-('P006', N'Quỷ Cẩu', N'Kinh dị', N'Võ Thanh Hòa', 91, '2023-12-29', N'Chuyện tâm linh xoay quanh một gia đình làm nghề mổ chó.', 'quycau.jpg'),
-
-('P007', N'Doraemon: Bản Tình Ca Nobita', N'Hoạt hình, Phiêu lưu', N'Imai Kazuaki', 115, '2024-05-24', N'Nobita và những người bạn dùng âm nhạc để cứu thế giới.', 'doraemon2024.jpg'),
-
-('P008', N'Bố Già', N'Gia đình, Hài', N'Trấn Thành', 128, '2021-03-05', N'Mâu thuẫn giữa cha và con trai trong một xóm nghèo.', 'bogia.jpg'),
-
-('P009', N'Spider-Man: Across the Spider-Verse', N'Hoạt hình, Hành động', N'Joaquim Dos Santos', 140, '2023-06-02', N'Miles Morales du hành qua đa vũ trụ nhện.', 'spiderman_verse.jpg'),
-
-('P010', N'Nhà Bà Nữ', N'Tâm lý, Gia đình', N'Trấn Thành', 102, '2023-01-22', N'Những rắc rối và định kiến trong gia đình bà bán bánh canh cua.', 'nhabanu.jpg'),
-('P011', N'Dune: Hành Tinh Cát - Phần 2', N'Hành động, Viễn tưởng', N'Denis Villeneuve', 166, '2024-03-01', N'Paul Atreides tiếp tục hành trình trả thù những kẻ đã hủy diệt gia đình mình.', 'dune2.jpg'),
-
-('P012', N'Minions: Sự Trỗi Dậy Của Gru', N'Hoạt hình, Hài', N'Kyle Balda', 87, '2022-07-01', N'Hành trình của Gru thời niên thiếu để trở thành siêu ác nhân cùng các Minions.', 'minions.jpg'),
-
-('P013', N'Kẻ Ăn Hồn', N'Kinh dị, Cổ trang', N'Trần Hữu Tấn', 109, '2023-12-15', N'Những cái chết bí ẩn tại làng Địa Ngục liên quan đến tà thuật.', 'keanhon.jpg'),
-
-('P014', N'John Wick: Phần 4', N'Hành động, Giật gân', N'Chad Stahelski', 169, '2023-03-24', N'John Wick tìm cách đánh bại Hội Đồng Tối Cao để giành lấy tự do.', 'johnwick4.jpg'),
-
-('P015', N'Your Name', N'Hoạt hình, Lãng mạn', N'Makoto Shinkai', 107, '2017-01-13', N'Câu chuyện hoán đổi thân xác kỳ lạ giữa hai thiếu niên Mitsuha và Taki.', 'yourname.jpg');
+('P001', N'Lật Mặt 7: Một Điều Ước', 'TL0006', N'Lý Hải', 138, '2024-04-26', N'Câu chuyện về người mẹ già và 5 người con.', 'latmat7.jpg'),
+('P002', N'Đất Rừng Phương Nam', 'TL0001', N'Nguyễn Quang Dũng', 110, '2023-10-20', N'Hành trình tìm cha của bé An.', 'datrung.jpg'),
+('P003', N'Mai', 'TL0004', N'Trấn Thành', 131, '2024-02-10', N'Câu chuyện về cuộc đời người phụ nữ tên Mai.', 'mai.jpg'),
+('P004', N'Avengers: Endgame', 'TL0001', N'Anthony Russo', 181, '2019-04-26', N'Trận chiến cuối cùng của các siêu anh hùng.', 'avengers.jpg'),
+('P005', N'Mắt Biếc', 'TL0005', N'Victor Vũ', 117, '2019-12-20', N'Tình yêu đơn phương của Ngạn dành cho Hà Lan.', 'matbiec.jpg'),
+('P006', N'Quỷ Cẩu', 'TL0003', N'Võ Thanh Hòa', 91, '2023-12-29', N'Chuyện tâm linh xoay quanh một gia đình làm nghề mổ chó.', 'quycau.jpg'),
+('P007', N'Doraemon: Bản Tình Ca Nobita', 'TL0002', N'Imai Kazuaki', 115, '2024-05-24', N'Nobita và những người bạn dùng âm nhạc để cứu thế giới.', 'doraemon2024.jpg'),
+('P008', N'Bố Già', 'TL0006', N'Trấn Thành', 128, '2021-03-05', N'Mâu thuẫn giữa cha và con trai trong một xóm nghèo.', 'bogia.jpg'),
+('P009', N'Spider-Man: Across the Spider-Verse', 'TL0002', N'Joaquim Dos Santos', 140, '2023-06-02', N'Miles Morales du hành qua đa vũ trụ nhện.', 'spiderman_verse.jpg'),
+('P010', N'Nhà Bà Nữ', 'TL0006', N'Trấn Thành', 102, '2023-01-22', N'Những rắc rối và định kiến trong gia đình bà bán bánh canh cua.', 'nhabanu.jpg'),
+('P011', N'Dune: Hành Tinh Cát - Phần 2', 'TL0001', N'Denis Villeneuve', 166, '2024-03-01', N'Paul Atreides tiếp tục hành trình trả thù.', 'dune2.jpg'),
+('P012', N'Minions: Sự Trỗi Dậy Của Gru', 'TL0002', N'Kyle Balda', 87, '2022-07-01', N'Hành trình của Gru thời niên thiếu.', 'minions.jpg'),
+('P013', N'Kẻ Ăn Hồn', 'TL0003', N'Trần Hữu Tấn', 109, '2023-12-15', N'Những cái chết bí ẩn tại làng Địa Ngục.', 'keanhon.jpg'),
+('P014', N'John Wick: Phần 4', 'TL0001', N'Chad Stahelski', 169, '2023-03-24', N'John Wick tìm cách đánh bại Hội Đồng Tối Cao.', 'johnwick4.jpg'),
+('P015', N'Your Name', 'TL0002', N'Makoto Shinkai', 107, '2017-01-13', N'Câu chuyện hoán đổi thân xác kỳ lạ.', 'yourname.jpg');
 
 INSERT INTO NhanVien (maNV, tenNV, gioiTinh, ngaySinh, SDT, email, diaChi, chucVu)
 VALUES
@@ -205,6 +208,64 @@ select *from Ghe
 
 
 
+INSERT INTO Ghe (maGhe, maPhong, hang, soGhe, loaiGhe, trangThai)
+VALUES 
+('G0006', 'P0002', 'B', 3, N'VIP', N'Còn trống'),
+('G0007', 'P0002', 'B', 4, N'VIP', N'Còn trống'),
+('G0008', 'P0002', 'B', 5, N'VIP', N'Còn trống'),
+('G0009', 'P0002', 'B', 6, N'VIP', N'Còn trống'),
+('G0010', 'P0002', 'B', 7, N'Thường', N'Còn trống'),
+('G0011', 'P0002', 'B', 8, N'Thường', N'Còn trống'),
+('G0012', 'P0002', 'B', 9, N'Thường', N'Còn trống'),
+('G0013', 'P0002', 'B', 10, N'Thường', N'Còn trống');
 
---DELETE FROM Ghe;
---DELETE FROM PhongChieu;
+-- Hàng C (Ghế từ G0014 đến G0025)
+INSERT INTO Ghe (maGhe, maPhong, hang, soGhe, loaiGhe, trangThai)
+VALUES 
+('G0014', 'P0002', 'C', 1, N'Thường', N'Còn trống'),
+('G0015', 'P0002', 'C', 2, N'Thường', N'Còn trống'),
+('G0016', 'P0002', 'C', 3, N'VIP', N'Còn trống'),
+('G0017', 'P0002', 'C', 4, N'VIP', N'Còn trống'),
+('G0018', 'P0002', 'C', 5, N'VIP', N'Còn trống'),
+('G0019', 'P0002', 'C', 6, N'VIP', N'Còn trống'),
+('G0020', 'P0002', 'C', 7, N'VIP', N'Còn trống'),
+('G0021', 'P0002', 'C', 8, N'VIP', N'Còn trống'),
+('G0022', 'P0002', 'C', 9, N'Thường', N'Còn trống'),
+('G0023', 'P0002', 'C', 10, N'Thường', N'Còn trống'),
+('G0024', 'P0002', 'C', 11, N'Thường', N'Còn trống'),
+('G0025', 'P0002', 'C', 12, N'Thường', N'Còn trống');
+
+-- Hàng D (Ghế từ G0026 đến G0038)
+INSERT INTO Ghe (maGhe, maPhong, hang, soGhe, loaiGhe, trangThai)
+VALUES 
+('G0026', 'P0002', 'D', 1, N'Thường', N'Còn trống'),
+('G0027', 'P0002', 'D', 2, N'Thường', N'Còn trống'),
+('G0028', 'P0002', 'D', 3, N'VIP', N'Còn trống'),
+('G0029', 'P0002', 'D', 4, N'VIP', N'Còn trống'),
+('G0030', 'P0002', 'D', 5, N'VIP', N'Còn trống'),
+('G0031', 'P0002', 'D', 6, N'VIP', N'Còn trống'),
+('G0032', 'P0002', 'D', 7, N'VIP', N'Còn trống'),
+('G0033', 'P0002', 'D', 8, N'VIP', N'Còn trống'),
+('G0034', 'P0002', 'D', 9, N'Thường', N'Còn trống'),
+('G0035', 'P0002', 'D', 10, N'Thường', N'Còn trống'),
+('G0036', 'P0002', 'D', 11, N'Thường', N'Còn trống'),
+('G0037', 'P0002', 'D', 12, N'Thường', N'Còn trống'),
+('G0038', 'P0002', 'D', 13, N'Thường', N'Còn trống');
+
+-- Hàng E (Ghế từ G0039 đến G0050)
+INSERT INTO Ghe (maGhe, maPhong, hang, soGhe, loaiGhe, trangThai)
+VALUES 
+('G0039', 'P0002', 'E', 1, N'Thường', N'Còn trống'),
+('G0040', 'P0002', 'E', 2, N'Thường', N'Còn trống'),
+('G0041', 'P0002', 'E', 3, N'Thường', N'Còn trống'),
+('G0042', 'P0002', 'E', 4, N'Thường', N'Còn trống'),
+('G0043', 'P0002', 'E', 5, N'Thường', N'Còn trống'),
+('G0044', 'P0002', 'E', 6, N'Thường', N'Còn trống'),
+('G0045', 'P0002', 'E', 7, N'Thường', N'Còn trống'),
+('G0046', 'P0002', 'E', 8, N'Thường', N'Còn trống'),
+('G0047', 'P0002', 'E', 9, N'Thường', N'Còn trống'),
+('G0048', 'P0002', 'E', 10, N'Thường', N'Còn trống'),
+('G0049', 'P0002', 'E', 11, N'Thường', N'Còn trống'),
+('G0050', 'P0002', 'E', 12, N'Thường', N'Còn trống');
+
+

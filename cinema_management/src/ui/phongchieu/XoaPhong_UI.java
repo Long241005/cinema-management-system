@@ -10,25 +10,25 @@ import javax.swing.table.DefaultTableModel;
 import dao.PhongChieu_DAO;
 import entity.PhongChieu;
 
-public class CapNhatPhong_UI extends JPanel {
+public class XoaPhong_UI extends JPanel {
 
     private final Color BG = new Color(48, 52, 56);
     private final Color INPUT_BG = new Color(60, 64, 68);
     private final Color TEXT = Color.WHITE;
     private final Color BORDER = new Color(70, 72, 87);
+    private final Color RED = new Color(220, 53, 69);
     private final Color BLUE = new Color(33, 150, 243);
 
-    private JTextField txtMaPhong, txtTenPhong, txtSoGhe;
-    private JComboBox<String> cboLoaiPhong;
+    private JTextField txtMaPhong, txtTenPhong, txtSoGhe, txtLoaiPhong;
 
     private JTable table;
     private DefaultTableModel model;
 
-    private JButton btnCapNhat, btnLamMoi;
+    private JButton btnXoa, btnLamMoi;
 
     private PhongChieu_DAO dao;
 
-    public CapNhatPhong_UI() {
+    public XoaPhong_UI() {
         dao = new PhongChieu_DAO();
         initUI();
         loadData();
@@ -40,7 +40,7 @@ public class CapNhatPhong_UI extends JPanel {
         setBorder(new EmptyBorder(20, 30, 20, 30));
 
         // TIÊU ĐỀ
-        JLabel lblTitle = new JLabel("CẬP NHẬT PHÒNG CHIẾU", SwingConstants.CENTER);
+        JLabel lblTitle = new JLabel("XÓA PHÒNG CHIẾU", SwingConstants.CENTER);
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 30));
         lblTitle.setForeground(TEXT);
         add(lblTitle, BorderLayout.NORTH);
@@ -48,7 +48,7 @@ public class CapNhatPhong_UI extends JPanel {
         JPanel content = new JPanel(new BorderLayout(20, 20));
         content.setOpaque(false);
 
-        // FORM NHẬP LIỆU (BÊN TRÁI)
+        // FORM HIỂN THỊ THÔNG TIN (BÊN TRÁI)
         JPanel left = new JPanel(new BorderLayout(0, 20));
         left.setOpaque(false);
         left.setPreferredSize(new Dimension(430, 0));
@@ -57,19 +57,23 @@ public class CapNhatPhong_UI extends JPanel {
         form.setOpaque(false);
 
         txtMaPhong = createInput(form, "Mã phòng chiếu:");
-        txtMaPhong.setEditable(false); // Không cho sửa mã khi cập nhật[cite: 1]
-        
         txtTenPhong = createInput(form, "Tên phòng chiếu:");
         txtSoGhe = createInput(form, "Số lượng ghế:");
-        cboLoaiPhong = createCombo(form, "Loại phòng chiếu:", new String[]{"2D", "3D", "IMAX", "4DX"});
+        txtLoaiPhong = createInput(form, "Loại phòng:");
+
+        // Vô hiệu hóa chỉnh sửa để chỉ dùng để xem trước khi xóa[cite: 4]
+        txtMaPhong.setEditable(false);
+        txtTenPhong.setEditable(false);
+        txtSoGhe.setEditable(false);
+        txtLoaiPhong.setEditable(false);
 
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
         actions.setOpaque(false);
 
-        btnCapNhat = createButton("Cập nhật");
-        btnLamMoi = createButton("Làm mới");
+        btnXoa = createButton("Xóa phòng", RED);
+        btnLamMoi = createButton("Làm mới", BLUE);
 
-        actions.add(btnCapNhat);
+        actions.add(btnXoa);
         actions.add(btnLamMoi);
 
         left.add(form, BorderLayout.CENTER);
@@ -79,7 +83,7 @@ public class CapNhatPhong_UI extends JPanel {
         JPanel right = new JPanel(new BorderLayout(0, 15));
         right.setOpaque(false);
 
-        JLabel lblDs = new JLabel("Danh sách phòng chiếu");
+        JLabel lblDs = new JLabel("Danh sách phòng chiếu hiện có");
         lblDs.setForeground(TEXT);
         lblDs.setFont(new Font("Segoe UI", Font.BOLD, 18));
 
@@ -94,7 +98,7 @@ public class CapNhatPhong_UI extends JPanel {
             }
         };
 
-        // Định dạng bảng đồng bộ với hệ thống[cite: 1, 2]
+        // Thiết kế bảng đồng bộ[cite: 2, 4]
         table.setRowHeight(34);
         table.setBackground(new Color(31, 32, 44));
         table.setForeground(Color.WHITE);
@@ -116,28 +120,24 @@ public class CapNhatPhong_UI extends JPanel {
 
         add(content, BorderLayout.CENTER);
 
-        // SỰ KIỆN ĐỔ DỮ LIỆU TỪ BẢNG LÊN FORM[cite: 1]
+        // Sự kiện click bảng[cite: 4]
         table.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 int row = table.getSelectedRow();
                 if (row != -1) {
-                    txtMaPhong.setText(model.getValueAt(row, 0).toString());
-                    txtTenPhong.setText(model.getValueAt(row, 1).toString());
-                    txtSoGhe.setText(model.getValueAt(row, 2).toString());
-                    cboLoaiPhong.setSelectedItem(model.getValueAt(row, 3).toString());
+                    hienThiLenForm(row);
                 }
             }
         });
 
-        btnCapNhat.addActionListener(e -> capNhatPhong());
+        btnXoa.addActionListener(e -> xoaPhong());
         btnLamMoi.addActionListener(e -> clearForm());
     }
 
     private JTextField createInput(JPanel panel, String label) {
         JPanel wrap = new JPanel(new BorderLayout(5, 6));
         wrap.setOpaque(false);
-
         JLabel lbl = new JLabel(label);
         lbl.setForeground(TEXT);
         lbl.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -154,27 +154,20 @@ public class CapNhatPhong_UI extends JPanel {
         return txt;
     }
 
-    private JComboBox<String> createCombo(JPanel panel, String label, String[] items) {
-        JPanel wrap = new JPanel(new BorderLayout(5, 6));
-        wrap.setOpaque(false);
-        JLabel lbl = new JLabel(label);
-        lbl.setForeground(TEXT);
-        lbl.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        JComboBox<String> cbo = new JComboBox<>(items);
-        cbo.setPreferredSize(new Dimension(250, 40));
-        wrap.add(lbl, BorderLayout.NORTH);
-        wrap.add(cbo, BorderLayout.CENTER);
-        panel.add(wrap);
-        return cbo;
-    }
-
-    private JButton createButton(String text) {
+    private JButton createButton(String text, Color color) {
         JButton btn = new JButton(text);
         btn.setPreferredSize(new Dimension(160, 42));
-        btn.setBackground(BLUE);
+        btn.setBackground(color);
         btn.setForeground(TEXT);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         return btn;
+    }
+
+    private void hienThiLenForm(int row) {
+        txtMaPhong.setText(model.getValueAt(row, 0).toString());
+        txtTenPhong.setText(model.getValueAt(row, 1).toString());
+        txtSoGhe.setText(model.getValueAt(row, 2).toString());
+        txtLoaiPhong.setText(model.getValueAt(row, 3).toString());
     }
 
     private void loadData() {
@@ -185,46 +178,27 @@ public class CapNhatPhong_UI extends JPanel {
         }
     }
 
-    private void capNhatPhong() {
+    private void xoaPhong() {
         String ma = txtMaPhong.getText().trim();
-        String ten = txtTenPhong.getText().trim();
-        String soGheStr = txtSoGhe.getText().trim();
-        String loai = cboLoaiPhong.getSelectedItem().toString();
 
         if (ma.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn phòng cần cập nhật!");
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn phòng chiếu cần xóa từ danh sách!");
             return;
         }
 
-        try {
-            int soGhe = Integer.parseInt(soGheStr);
-            PhongChieu p = new PhongChieu(ma, ten, soGhe, loai);
 
-            if (dao.capNhatPhongChieu(p)) {
-                JOptionPane.showMessageDialog(this, "Cập nhật phòng chiếu thành công!");
-                loadData();
+        int confirm = JOptionPane.showConfirmDialog(this, 
+                "Bạn có chắc muốn xóa phòng này? Điều này có thể ảnh hưởng đến ghế và lịch chiếu.", 
+                "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            boolean ketQua = dao.xoaPhongChieu(ma);
+            if (ketQua) {
+                JOptionPane.showMessageDialog(this, "Xóa phòng chiếu thành công!");
                 clearForm();
+                loadData();
             } else {
-                JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Số ghế phải là số nguyên!");
-        }
-    }
- // Thêm phương thức này vào lớp CapNhatPhong_UI
-    public void fillData(PhongChieu phong) {
-        if (phong != null) {
-            txtMaPhong.setText(phong.getMaPhong());
-            txtTenPhong.setText(phong.getTenPhong());
-            txtSoGhe.setText(String.valueOf(phong.getSoGhe()));
-            cboLoaiPhong.setSelectedItem(phong.getLoaiPhong());
-            
-            // (Tùy chọn) Chọn dòng tương ứng trong bảng nếu cần
-            for (int i = 0; i < table.getRowCount(); i++) {
-                if (model.getValueAt(i, 0).toString().equals(phong.getMaPhong())) {
-                    table.setRowSelectionInterval(i, i);
-                    break;
-                }
+                JOptionPane.showMessageDialog(this, "Xóa thất bại! Có thể do ràng buộc dữ liệu (ghế hoặc lịch chiếu).");
             }
         }
     }
@@ -233,7 +207,7 @@ public class CapNhatPhong_UI extends JPanel {
         txtMaPhong.setText("");
         txtTenPhong.setText("");
         txtSoGhe.setText("");
-        cboLoaiPhong.setSelectedIndex(0);
+        txtLoaiPhong.setText("");
         table.clearSelection();
     }
 }

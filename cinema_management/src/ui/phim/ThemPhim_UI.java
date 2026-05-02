@@ -3,29 +3,33 @@ package ui.phim;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.io.File;
 import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Properties;
 import dao.Phim_DAO;
+import dao.TheLoai_DAO; // Import DAO thể loại
 import entity.Phim;
+import entity.TheLoai; // Import Entity thể loại
 import org.jdatepicker.impl.*;
 
 public class ThemPhim_UI extends JPanel {
-    private JTextField txtMa, txtTen, txtDaoDien, txtTheLoai, txtThoiLuong;
+    private JTextField txtMa, txtTen, txtDaoDien;
+    private JComboBox<TheLoai> cmbTheLoai; // Đổi từ JTextField sang JComboBox thực thể
+    private JSpinner spnThoiLuong; // Đổi sang JSpinner để điều chỉnh số
     private JDatePickerImpl datePicker; 
     private JTextArea txtMoTa;
     private JLabel lblPoster;
-    private String tenFileAnhLuuTrongDB = ""; 
-    private File fileAnhGoc = null; // Lưu file người dùng vừa chọn để xử lý khi nhấn Lưu
+    private File fileAnhGoc = null; 
+    
     private Phim_DAO phimDAO = new Phim_DAO();
+    private TheLoai_DAO theLoaiDAO = new TheLoai_DAO(); // Dùng để nạp ComboBox
 
     public ThemPhim_UI() {
         setLayout(new OverlayLayout(this));
 
-        // --- LỚP 1: BACKGROUND ---
+        // --- LỚP 1: BACKGROUND (Giữ nguyên phong cách của bạn) ---
         JPanel pnlBackground = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -62,29 +66,55 @@ public class ThemPhim_UI extends JPanel {
         GridBagConstraints gbcForm = new GridBagConstraints();
         gbcForm.fill = GridBagConstraints.HORIZONTAL;
         gbcForm.insets = new Insets(12, 10, 12, 20);
-
         Font fontLabel = new Font("Segoe UI", Font.BOLD, 16);
 
+        // 1. Mã Phim (Tự động)
         txtMa = taoHangInput(pnlLeft, "Mã Phim:", 0, gbcForm, fontLabel);
+        txtMa.setEditable(false);
+        txtMa.setText(phimDAO.phatSinhMaPhimTuDong()); // Định dạng P0001
+
+        // 2. Tên Phim
         txtTen = taoHangInput(pnlLeft, "Tên Phim:", 1, gbcForm, fontLabel);
-        txtTheLoai = taoHangInput(pnlLeft, "Thể loại:", 2, gbcForm, fontLabel);
+
+        // 3. Thể Loại (ComboBox động + Nút thêm nhanh)
+        gbcForm.gridy = 2; gbcForm.gridx = 0; gbcForm.weightx = 0.2;
+        pnlLeft.add(new JLabel("Thể loại:") {{ setForeground(Color.LIGHT_GRAY); setFont(fontLabel); }}, gbcForm);
+        
+        JPanel pnlTheLoaiGroup = new JPanel(new BorderLayout(10, 0));
+        pnlTheLoaiGroup.setOpaque(false);
+        cmbTheLoai = new JComboBox<>();
+        loadDataTheLoai(); // Nạp dữ liệu từ SQL
+        JButton btnThemNhanhTL = new JButton("+");
+        btnThemNhanhTL.addActionListener(e -> xuLyThemTheLoaiNhanh());
+        
+        pnlTheLoaiGroup.add(cmbTheLoai, BorderLayout.CENTER);
+        pnlTheLoaiGroup.add(btnThemNhanhTL, BorderLayout.EAST);
+        gbcForm.gridx = 1; gbcForm.weightx = 0.8;
+        pnlLeft.add(pnlTheLoaiGroup, gbcForm);
+
+        // 4. Đạo diễn
         txtDaoDien = taoHangInput(pnlLeft, "Đạo diễn:", 3, gbcForm, fontLabel);
-        txtThoiLuong = taoHangInput(pnlLeft, "Thời lượng (phút):", 4, gbcForm, fontLabel);
+
+        // 5. Thời lượng (Spinner)
+        gbcForm.gridy = 4; gbcForm.gridx = 0; gbcForm.weightx = 0.2;
+        pnlLeft.add(new JLabel("Thời lượng (phút):") {{ setForeground(Color.LIGHT_GRAY); setFont(fontLabel); }}, gbcForm);
+        spnThoiLuong = new JSpinner(new SpinnerNumberModel(120, 1, 600, 1));
+        gbcForm.gridx = 1; gbcForm.weightx = 0.8;
+        pnlLeft.add(spnThoiLuong, gbcForm);
         
-        // Ngày khởi chiếu
-        gbcForm.gridx = 0; gbcForm.gridy = 5; gbcForm.weightx = 0.2;
+        // 6. Ngày khởi chiếu
+        gbcForm.gridy = 5; gbcForm.gridx = 0; gbcForm.weightx = 0.2;
         pnlLeft.add(new JLabel("Ngày khởi chiếu:") {{ setForeground(Color.LIGHT_GRAY); setFont(fontLabel); }}, gbcForm);
-        
-        UtilDateModel model = new UtilDateModel();
-        Properties p = new Properties();
-        p.put("text.today", "Today"); p.put("text.month", "Month"); p.put("text.year", "Year");
-        JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+        UtilDateModel dateModel = new UtilDateModel();
+        Properties pr = new Properties();
+        pr.put("text.today", "Today"); pr.put("text.month", "Month"); pr.put("text.year", "Year");
+        JDatePanelImpl datePanel = new JDatePanelImpl(dateModel, pr);
         datePicker = new JDatePickerImpl(datePanel, new DateComponentFormatter());
         gbcForm.gridx = 1; gbcForm.weightx = 0.8;
         pnlLeft.add(datePicker, gbcForm);
 
-        // Mô tả
-        gbcForm.gridx = 0; gbcForm.gridy = 6; gbcForm.weightx = 0.2;
+        // 7. Mô tả
+        gbcForm.gridy = 6; gbcForm.gridx = 0; gbcForm.weightx = 0.2;
         pnlLeft.add(new JLabel("Mô tả phim:") {{ setForeground(Color.LIGHT_GRAY); setFont(fontLabel); }}, gbcForm);
         txtMoTa = new JTextArea(5, 20);
         txtMoTa.setBackground(new Color(60, 64, 68)); txtMoTa.setForeground(Color.WHITE);
@@ -136,26 +166,23 @@ public class ThemPhim_UI extends JPanel {
 
         add(pnlMain);
         add(pnlBackground);
-
-        // GÁN SỰ KIỆN ENTER CHO CÁC Ô NHẬP
-        ganSuKienEnter(btnLuu);
     }
 
-    private void ganSuKienEnter(JButton btnTarget) {
-        // Danh sách các ô nhập theo thứ tự ưu tiên
-        JTextField[] fields = {txtMa, txtTen, txtTheLoai, txtDaoDien, txtThoiLuong};
-        
-        for (int i = 0; i < fields.length; i++) {
-            final int index = i;
-            fields[i].addActionListener(e -> {
-                // Nếu chưa phải ô cuối cùng thì nhảy xuống ô kế tiếp
-                if (index < fields.length - 1) {
-                    fields[index + 1].requestFocus();
-                } else {
-                    // Nếu là ô cuối (Thời lượng), thực hiện nhấn nút Lưu
-                    btnTarget.doClick();
-                }
-            });
+    private void loadDataTheLoai() {
+        cmbTheLoai.removeAllItems();
+        for (TheLoai tl : theLoaiDAO.getAllTheLoai()) {
+            cmbTheLoai.addItem(tl);
+        }
+    }
+
+    private void xuLyThemTheLoaiNhanh() {
+        String tenMoi = JOptionPane.showInputDialog(this, "Nhập tên thể loại mới:");
+        if (tenMoi != null && !tenMoi.trim().isEmpty()) {
+            TheLoai tl = new TheLoai("", tenMoi); // DAO tự sinh mã TL
+            if (theLoaiDAO.themTheLoai(tl)) {
+                loadDataTheLoai();
+                cmbTheLoai.setSelectedItem(tl);
+            }
         }
     }
 
@@ -176,7 +203,6 @@ public class ThemPhim_UI extends JPanel {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             fileAnhGoc = fc.getSelectedFile();
-            // Preview tạm thời
             ImageIcon icon = new ImageIcon(fileAnhGoc.getAbsolutePath());
             lblPoster.setIcon(new ImageIcon(icon.getImage().getScaledInstance(320, 450, Image.SCALE_SMOOTH)));
             lblPoster.setText("");
@@ -186,40 +212,53 @@ public class ThemPhim_UI extends JPanel {
     private void xuLyLuuPhim() {
         try {
             String maPhim = txtMa.getText().trim();
-            if (maPhim.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập mã phim trước!");
+            String tenPhim = txtTen.getText().trim();
+            if (tenPhim.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập tên phim!");
                 return;
             }
 
-            // 1. XỬ LÝ COPY ẢNH VÀO THƯ MỤC IMG VỚI TÊN [MAPHIM].JPG
+            // 1. XỬ LÝ POSTER
+            String tenAnh = "";
             if (fileAnhGoc != null) {
-                tenFileAnhLuuTrongDB = maPhim + ".jpg";
-                Path dest = Paths.get("src/img/" + tenFileAnhLuuTrongDB);
-                Files.createDirectories(dest.getParent()); // Đảm bảo thư mục img tồn tại
+                tenAnh = maPhim + ".jpg";
+                Path dest = Paths.get("src/img/" + tenAnh);
+                Files.createDirectories(dest.getParent());
                 Files.copy(fileAnhGoc.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            // 2. LẤY DỮ LIỆU CÒN LẠI
+            // 2. LẤY DỮ LIỆU TỪ SPINNER VÀ COMBOBOX THỰC THỂ
+            TheLoai tl = (TheLoai) cmbTheLoai.getSelectedItem();
+            int thoiLuong = (int) spnThoiLuong.getValue();
+
+            // 3. LẤY NGÀY
             java.util.Date dateSelected = (java.util.Date) datePicker.getModel().getValue();
+            if (dateSelected == null) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày khởi chiếu!");
+                return;
+            }
             LocalDate ngay = dateSelected.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-            Phim p = new Phim(maPhim, txtTen.getText().trim(), txtDaoDien.getText().trim(), 
-                             txtTheLoai.getText().trim(), Integer.parseInt(txtThoiLuong.getText().trim()), 
-                             ngay, txtMoTa.getText().trim(), tenFileAnhLuuTrongDB);
+            // 4. TẠO ĐỐI TƯỢNG VỚI QUAN HỆ THỰC THỂ
+            Phim p = new Phim(maPhim, tenPhim, txtDaoDien.getText().trim(), 
+                             tl, thoiLuong, ngay, txtMoTa.getText().trim(), tenAnh);
 
             if (phimDAO.themPhim(p)) {
-                JOptionPane.showMessageDialog(this, "Thêm thành công! Ảnh đã được lưu là " + tenFileAnhLuuTrongDB);
+                JOptionPane.showMessageDialog(this, "Thêm phim " + tenPhim + " thành công!");
                 xoaTrang();
+                txtMa.setText(phimDAO.phatSinhMaPhimTuDong()); // Cập nhật mã cho phim kế tiếp
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi: Kiểm tra dữ liệu hoặc quyền ghi file vào thư mục img.");
+            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     private void xoaTrang() {
-        txtMa.setText(""); txtTen.setText(""); txtTheLoai.setText("");
-        txtDaoDien.setText(""); txtThoiLuong.setText(""); txtMoTa.setText("");
+        txtTen.setText("");
+        txtDaoDien.setText("");
+        spnThoiLuong.setValue(120);
+        txtMoTa.setText("");
         datePicker.getModel().setValue(null);
         lblPoster.setIcon(null); lblPoster.setText("CHƯA CÓ ẢNH");
         fileAnhGoc = null;

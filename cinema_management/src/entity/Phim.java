@@ -10,7 +10,9 @@ public class Phim implements Serializable {
 	private String maPhim;
 	private String tenPhim;
 	private String daoDien;
-	private String theLoai;
+	private TheLoai theLoai;
+
+	
 	private int thoiLuong; // Phút
 	private LocalDate ngayKhoiChieu;
 	private String moTa;
@@ -20,15 +22,35 @@ public class Phim implements Serializable {
 	public Phim() {
 	}
 
-	// Constructor đầy đủ
 	
 
-	// Getters and Setters
+
 	public String getMaPhim() {
 		return maPhim;
 	}
 
-	public Phim(String maPhim, String tenPhim, String daoDien, String theLoai, int thoiLuong, LocalDate ngayKhoiChieu,
+
+
+
+	
+
+
+
+	public TheLoai getTheLoai() {
+		return theLoai;
+	}
+
+
+
+
+	public void setTheLoai(TheLoai theLoai) {
+		this.theLoai = theLoai;
+	}
+
+
+
+
+	public Phim(String maPhim, String tenPhim, String daoDien, TheLoai theLoai, int thoiLuong, LocalDate ngayKhoiChieu,
 			String moTa, String duongDanAnh) {
 		super();
 		this.maPhim = maPhim;
@@ -61,14 +83,6 @@ public class Phim implements Serializable {
 		this.daoDien = daoDien;
 	}
 
-	public String getTheLoai() {
-		return theLoai;
-	}
-
-	public void setTheLoai(String theLoai) {
-		this.theLoai = theLoai;
-	}
-
 	public int getThoiLuong() {
 		return thoiLuong;
 	}
@@ -92,7 +106,6 @@ public class Phim implements Serializable {
 	public void setMoTa(String moTa) {
 		this.moTa = moTa;
 	}
-	
 
 	public String getDuongDanAnh() {
 		return duongDanAnh;
