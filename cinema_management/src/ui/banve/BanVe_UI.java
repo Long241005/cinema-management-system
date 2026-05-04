@@ -101,8 +101,16 @@ public class BanVe_UI extends JPanel {
         gbc.gridx = 2; gbc.weightx = 0;
         pnlInfo.add(createLabel("Nhân viên:"), gbc);
         txtNhanVien = createTextField();
-        txtNhanVien.setText("Nguyễn Hoàng A"); 
+        NhanVien nv = services.AuthService.getUser();
+
+        if (nv != null) {
+            txtNhanVien.setText(nv.getTenNV());
+        } else {
+            txtNhanVien.setText("Chưa đăng nhập");
+        }
+
         txtNhanVien.setEditable(false);
+        txtNhanVien.setBackground(new Color(80, 84, 88));
         txtNhanVien.setBackground(new Color(80, 84, 88));
         gbc.gridx = 3; gbc.weightx = 1.0;
         pnlInfo.add(txtNhanVien, gbc);
