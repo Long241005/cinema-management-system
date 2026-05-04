@@ -182,7 +182,28 @@ VALUES
 ('NV010', N'Đỗ Thị Ngọc', 0, '1999-10-27', '0910123456', 'ngoc.do@gmail.com', N'Huế', N'Nhân viên bán vé');
 --DELETE FROM Phim;
 
+INSERT INTO KhachHang (maKH, tenKhachHang, SDT, Email, diemTichLuy) VALUES
+('KH001', N'Nguyễn Văn An', '0901234567', 'an.nguyen@gmail.com', 120),
+('KH002', N'Trần Thị Bình', '0912345678', 'binh.tran@gmail.com', 50),
+('KH003', N'Lê Văn Cường', '0923456789', 'cuong.le@gmail.com', 200),
+('KH004', N'Phạm Thị Dung', '0934567890', 'dung.pham@gmail.com', 80),
+('KH005', N'Hoàng Văn Em', '0945678901', 'em.hoang@gmail.com', 30),
+('KH006', N'Đỗ Thị Giang', '0956789012', 'giang.do@gmail.com', 150),
+('KH007', N'Vũ Văn Hải', '0967890123', 'hai.vu@gmail.com', 60),
+('KH008', N'Bùi Thị Hạnh', '0978901234', 'hanh.bui@gmail.com', 90),
+('KH009', N'Ngô Văn Khang', '0989012345', 'khang.ngo@gmail.com', 40),
+('KH010', N'Dương Thị Lan', '0990123456', 'lan.duong@gmail.com', 170),
 
+('KH011', N'Nguyễn Văn Minh', '0901122334', 'minh.nguyen@gmail.com', 300),
+('KH012', N'Trần Thị Nga', '0912233445', 'nga.tran@gmail.com', 20),
+('KH013', N'Lê Văn Phúc', '0923344556', 'phuc.le@gmail.com', 110),
+('KH014', N'Phạm Thị Quỳnh', '0934455667', 'quynh.pham@gmail.com', 75),
+('KH015', N'Hoàng Văn Sơn', '0945566778', 'son.hoang@gmail.com', 55),
+('KH016', N'Đỗ Thị Trang', '0956677889', 'trang.do@gmail.com', 95),
+('KH017', N'Vũ Văn Tuấn', '0967788990', 'tuan.vu@gmail.com', 10),
+('KH018', N'Bùi Thị Uyên', '0978899001', 'uyen.bui@gmail.com', 130),
+('KH019', N'Ngô Văn Việt', '0989900112', 'viet.ngo@gmail.com', 160),
+('KH020', N'Dương Thị Yến', '0990011223', 'yen.duong@gmail.com', 70);
 
 INSERT INTO PhongChieu (maPhong, tenPhong, soGhe, loaiPhong)
 VALUES 
@@ -268,4 +289,14 @@ VALUES
 ('G0049', 'P0002', 'E', 11, N'Thường', N'Còn trống'),
 ('G0050', 'P0002', 'E', 12, N'Thường', N'Còn trống');
 
-
+INSERT INTO KhuyenMai (maKM, tenKhuyenMai, phanTramGiam, ngayBatDau, ngayKetThuc) VALUES
+('KM001', N'Khuyến mãi đầu năm', 10.00, '2026-01-01', '2026-01-15'),
+('KM002', N'Ưu đãi Tết Nguyên Đán', 20.00, '2026-02-01', '2026-02-10'),
+('KM003', N'Valentine ngọt ngào', 15.00, '2026-02-13', '2026-02-15'),
+('KM004', N'Chào hè rực rỡ', 25.00, '2026-05-01', '2026-05-31'),
+('KM005', N'Ngày Quốc tế Thiếu nhi', 30.00, '2026-06-01', '2026-06-05'),
+('KM006', N'Khuyến mãi mùa hè', 20.00, '2026-06-10', '2026-07-10'),
+('KM007', N'Back to School', 15.00, '2026-08-15', '2026-09-05'),
+('KM008', N'Ưu đãi Halloween', 35.00, '2026-10-25', '2026-10-31'),
+('KM009', N'Black Friday Sale', 40.00, '2026-11-25', '2026-11-30'),
+('KM010', N'Giáng Sinh an lành', 50.00, '2026-12-20', '2026-12-31');
