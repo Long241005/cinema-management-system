@@ -13,15 +13,15 @@ public class Phim_DAO {
     /**
      * Helper: Ánh xạ kết quả từ ResultSet sang đối tượng Phim
      */
-	private Phim mapPhim(ResultSet rs) throws SQLException {
-        // Khởi tạo đối tượng TheLoai từ dữ liệu JOIN[cite: 2]
+    private Phim mapPhim(ResultSet rs) throws SQLException {
+        // Khởi tạo đối tượng TheLoai đầy đủ thông tin từ kết quả JOIN
         TheLoai tl = new TheLoai(rs.getString("maTheLoai"), rs.getString("tenTheLoai"));
 
         return new Phim(
             rs.getString("maPhim"),
             rs.getString("tenPhim"),
             rs.getString("daoDien"),
-            tl, // Truyền đối tượng vào[cite: 2]
+            tl, // Gán đối tượng thực thể TheLoai
             rs.getInt("thoiLuong"),
             rs.getDate("ngayKhoiChieu").toLocalDate(),
             rs.getString("moTa"),
@@ -29,69 +29,56 @@ public class Phim_DAO {
         );
     }
 
-    // ================== 1. ĐỌC DỮ LIỆU (Dùng cho TraCuuPhim_UI & CapNhatPhim_UI) ==================
+    // ================== 1. ĐỌC DỮ LIỆU TỔNG HỢP ==================
 
-	public List<Phim> docDanhSachPhim() {
-	    List<Phim> ds = new ArrayList<>();
-	    // Cần JOIN với bảng TheLoai để lấy được tenTheLoai
-	    String sql = "SELECT p.*, tl.tenTheLoai FROM Phim p JOIN TheLoai tl ON p.maTheLoai = tl.maTheLoai";
-	    try (Connection conn = DatabaseConnection.getInstance().getConnection();
-	         Statement stmt = conn.createStatement();
-	         ResultSet rs = stmt.executeQuery(sql)) {
-	        while (rs.next()) {
-	            ds.add(mapPhim(rs));
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	    return ds;
-	}
+    public List<Phim> docDanhSachPhim() {
+        List<Phim> ds = new ArrayList<>();
+        // Sử dụng JOIN để lấy tên thể loại chính xác từ bảng liên kết[cite: 15]
+        String sql = "SELECT p.*, tl.tenTheLoai FROM Phim p JOIN TheLoai tl ON p.maTheLoai = tl.maTheLoai";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                ds.add(mapPhim(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ds;
+    }
 
-    // ================== 2. TÌM KIẾM CHI TIẾT (Khớp với CapNhatPhim_UI) ==================
+    // ================== 2. TRA CỨU CHI TIẾT ==================
 
-    /**
-     * Hàm này cực kỳ quan trọng để đổ dữ liệu lên Form cập nhật khi click bảng
-     */
-	public Phim timPhimTheoMa(String maPhim) {
-	    String sql = "SELECT p.*, tl.tenTheLoai FROM Phim p JOIN TheLoai tl ON p.maTheLoai = tl.maTheLoai WHERE p.maPhim = ?";
-	    try (Connection conn = DatabaseConnection.getInstance().getConnection();
-	         PreparedStatement stmt = conn.prepareStatement(sql)) {
-	        stmt.setString(1, maPhim);
-	        try (ResultSet rs = stmt.executeQuery()) {
-	            if (rs.next()) {
-	                return mapPhim(rs);
-	            }
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	    return null;
-	}
+    public Phim timPhimTheoMa(String maPhim) {
+        String sql = "SELECT p.*, tl.tenTheLoai FROM Phim p JOIN TheLoai tl ON p.maTheLoai = tl.maTheLoai WHERE p.maPhim = ?";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, maPhim);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapPhim(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-    // ================== 3. THÊM, XÓA, SỬA (Khớp với ThemPhim_UI & CapNhatPhim_UI) ==================
+    // ================== 3. THÊM, XÓA, SỬA ==================
 
     public boolean themPhim(Phim p) {
-        // Câu lệnh SQL phải khớp với các cột trong Database của bạn
         String sql = "INSERT INTO Phim (maPhim, tenPhim, daoDien, maTheLoai, thoiLuong, ngayKhoiChieu, moTa, duongDanAnh) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        try (Connection conn = connect.DatabaseConnection.getInstance().getConnection();
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
             stmt.setString(1, p.getMaPhim());
             stmt.setString(2, p.getTenPhim());
             stmt.setString(3, p.getDaoDien());
-            
-            // SỬA LỖI TẠI ĐÂY: Lấy mã từ đối tượng thực thể TheLoai
-            stmt.setString(4, p.getTheLoai().getMaTheLoai()); 
-            
+            stmt.setString(4, p.getTheLoai().getMaTheLoai()); // Lấy mã từ đối tượng thực thể[cite: 15]
             stmt.setInt(5, p.getThoiLuong());
-            
-            // Chuyển LocalDate sang sql.Date để lưu vào SQL Server
             stmt.setDate(6, java.sql.Date.valueOf(p.getNgayKhoiChieu())); 
-            
             stmt.setString(7, p.getMoTa());
-            stmt.setString(8, p.getDuongDanAnh()); // hoặc getDuongDanAnh() tùy bạn đặt tên
-            
+            stmt.setString(8, p.getDuongDanAnh());
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -100,7 +87,8 @@ public class Phim_DAO {
     }
 
     public boolean capNhatPhim(Phim p) {
-        String sql = "UPDATE Phim SET tenPhim=?, daoDien=?, theLoai=?, thoiLuong=?, ngayKhoiChieu=?, moTa=?, duongDanAnh=? WHERE maPhim=?";
+        // Đảm bảo cập nhật mã thể loại từ thực thể[cite: 15]
+        String sql = "UPDATE Phim SET tenPhim=?, daoDien=?, maTheLoai=?, thoiLuong=?, ngayKhoiChieu=?, moTa=?, duongDanAnh=? WHERE maPhim=?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, p.getTenPhim());
@@ -128,35 +116,42 @@ public class Phim_DAO {
             return false;
         }
     }
+
+    // ================== 4. TIỆN ÍCH ==================
+
     public String phatSinhMaPhimTuDong() {
-        // Lấy mã phim lớn nhất dựa trên thứ tự giảm dần[cite: 1, 2]
-        String sql = "SELECT TOP 1 maPhim FROM Phim ORDER BY maPhim DESC";
-        try (Connection conn = connect.DatabaseConnection.getInstance().getConnection();
+        // Sắp xếp theo độ dài trước, sau đó mới đến giá trị chuỗi để tìm số lớn nhất thực sự
+        String sql = "SELECT TOP 1 maPhim FROM Phim ORDER BY LEN(maPhim) DESC, maPhim DESC";
+        
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             
             if (rs.next()) {
-                String lastMa = rs.getString(1); // Ví dụ: "P0005"[cite: 1, 2]
-                // Cắt chuỗi từ vị trí index 1 để lấy phần số "0005" rồi cộng thêm 1[cite: 1]
+                String lastMa = rs.getString(1); // Ví dụ lấy được "P0015"
+                
+                // Cắt bỏ chữ 'P', chuyển phần còn lại thành số và cộng thêm 1[cite: 14]
                 int nextNum = Integer.parseInt(lastMa.substring(1)) + 1;
-                // Trả về định dạng P kèm 4 chữ số (VD: P0006)
+                
+                // Định dạng lại thành P kèm 4 chữ số (ví dụ: P0016)[cite: 14]
                 return String.format("P%04d", nextNum);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "P0001"; // Nếu bảng trống, trả về mã mặc định đầu tiên
+        return "P0001"; // Nếu bảng trống thì bắt đầu từ P0001[cite: 14]
     }
 
-    // ================== 4. TÌM KIẾM LIVE SEARCH (Khớp với TraCuuPhim_UI) ==================
+    // ================== 5. TÌM KIẾM NÂNG CAO (LIVE SEARCH) ==================
 
     public List<Phim> timKiemPhim(String ma, String ten, String theLoai) {
         List<Phim> ds = new ArrayList<>();
-        // Sử dụng JOIN để lấy được tenTheLoai
+        // StringBuilder giúp nối chuỗi SQL linh hoạt theo tham số đầu vào[cite: 15]
         StringBuilder sql = new StringBuilder("SELECT p.*, tl.tenTheLoai FROM Phim p JOIN TheLoai tl ON p.maTheLoai = tl.maTheLoai WHERE 1=1");
 
         if (ma != null && !ma.isEmpty()) sql.append(" AND p.maPhim LIKE ?");
         if (ten != null && !ten.isEmpty()) sql.append(" AND p.tenPhim LIKE ?");
+        // Lọc theo tên thể loại để khớp với lựa chọn trên UI[cite: 15]
         if (theLoai != null && !theLoai.equals("Tất cả")) sql.append(" AND tl.tenTheLoai LIKE ?");
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
@@ -177,4 +172,5 @@ public class Phim_DAO {
         }
         return ds;
     }
+    
 }

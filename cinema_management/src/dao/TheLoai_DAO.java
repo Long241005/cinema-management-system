@@ -56,7 +56,7 @@ public class TheLoai_DAO {
             return false;
         }
     }
-
+    
     /**
      * Tự động phát sinh mã thể loại tiếp theo (TL0001, TL0002...)
      */

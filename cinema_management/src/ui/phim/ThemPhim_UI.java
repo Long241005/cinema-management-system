@@ -9,27 +9,27 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Properties;
 import dao.Phim_DAO;
-import dao.TheLoai_DAO; // Import DAO thể loại
+import dao.TheLoai_DAO; 
 import entity.Phim;
-import entity.TheLoai; // Import Entity thể loại
+import entity.TheLoai; 
 import org.jdatepicker.impl.*;
 
 public class ThemPhim_UI extends JPanel {
     private JTextField txtMa, txtTen, txtDaoDien;
-    private JComboBox<TheLoai> cmbTheLoai; // Đổi từ JTextField sang JComboBox thực thể
-    private JSpinner spnThoiLuong; // Đổi sang JSpinner để điều chỉnh số
+    private JComboBox<TheLoai> cmbTheLoai; 
+    private JSpinner spnThoiLuong; 
     private JDatePickerImpl datePicker; 
     private JTextArea txtMoTa;
     private JLabel lblPoster;
     private File fileAnhGoc = null; 
     
     private Phim_DAO phimDAO = new Phim_DAO();
-    private TheLoai_DAO theLoaiDAO = new TheLoai_DAO(); // Dùng để nạp ComboBox
+    private TheLoai_DAO theLoaiDAO = new TheLoai_DAO();
 
     public ThemPhim_UI() {
         setLayout(new OverlayLayout(this));
 
-        // --- LỚP 1: BACKGROUND (Giữ nguyên phong cách của bạn) ---
+        // --- LỚP 1: BACKGROUND ---
         JPanel pnlBackground = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -71,19 +71,19 @@ public class ThemPhim_UI extends JPanel {
         // 1. Mã Phim (Tự động)
         txtMa = taoHangInput(pnlLeft, "Mã Phim:", 0, gbcForm, fontLabel);
         txtMa.setEditable(false);
-        txtMa.setText(phimDAO.phatSinhMaPhimTuDong()); // Định dạng P0001
+        txtMa.setText(phimDAO.phatSinhMaPhimTuDong()); 
 
-        // 2. Tên Phim
+        // 2. Tên Phim[cite: 11]
         txtTen = taoHangInput(pnlLeft, "Tên Phim:", 1, gbcForm, fontLabel);
 
-        // 3. Thể Loại (ComboBox động + Nút thêm nhanh)
+        // 3. Thể Loại[cite: 11]
         gbcForm.gridy = 2; gbcForm.gridx = 0; gbcForm.weightx = 0.2;
         pnlLeft.add(new JLabel("Thể loại:") {{ setForeground(Color.LIGHT_GRAY); setFont(fontLabel); }}, gbcForm);
         
         JPanel pnlTheLoaiGroup = new JPanel(new BorderLayout(10, 0));
         pnlTheLoaiGroup.setOpaque(false);
         cmbTheLoai = new JComboBox<>();
-        loadDataTheLoai(); // Nạp dữ liệu từ SQL
+        loadDataTheLoai(); 
         JButton btnThemNhanhTL = new JButton("+");
         btnThemNhanhTL.addActionListener(e -> xuLyThemTheLoaiNhanh());
         
@@ -92,17 +92,17 @@ public class ThemPhim_UI extends JPanel {
         gbcForm.gridx = 1; gbcForm.weightx = 0.8;
         pnlLeft.add(pnlTheLoaiGroup, gbcForm);
 
-        // 4. Đạo diễn
+        // 4. Đạo diễn[cite: 11]
         txtDaoDien = taoHangInput(pnlLeft, "Đạo diễn:", 3, gbcForm, fontLabel);
 
-        // 5. Thời lượng (Spinner)
+        // 5. Thời lượng[cite: 11]
         gbcForm.gridy = 4; gbcForm.gridx = 0; gbcForm.weightx = 0.2;
         pnlLeft.add(new JLabel("Thời lượng (phút):") {{ setForeground(Color.LIGHT_GRAY); setFont(fontLabel); }}, gbcForm);
         spnThoiLuong = new JSpinner(new SpinnerNumberModel(120, 1, 600, 1));
         gbcForm.gridx = 1; gbcForm.weightx = 0.8;
         pnlLeft.add(spnThoiLuong, gbcForm);
         
-        // 6. Ngày khởi chiếu
+        // 6. Ngày khởi chiếu[cite: 11]
         gbcForm.gridy = 5; gbcForm.gridx = 0; gbcForm.weightx = 0.2;
         pnlLeft.add(new JLabel("Ngày khởi chiếu:") {{ setForeground(Color.LIGHT_GRAY); setFont(fontLabel); }}, gbcForm);
         UtilDateModel dateModel = new UtilDateModel();
@@ -113,7 +113,7 @@ public class ThemPhim_UI extends JPanel {
         gbcForm.gridx = 1; gbcForm.weightx = 0.8;
         pnlLeft.add(datePicker, gbcForm);
 
-        // 7. Mô tả
+        // 7. Mô tả[cite: 11]
         gbcForm.gridy = 6; gbcForm.gridx = 0; gbcForm.weightx = 0.2;
         pnlLeft.add(new JLabel("Mô tả phim:") {{ setForeground(Color.LIGHT_GRAY); setFont(fontLabel); }}, gbcForm);
         txtMoTa = new JTextArea(5, 20);
@@ -151,7 +151,7 @@ public class ThemPhim_UI extends JPanel {
         pnlContent.add(pnlRight, gbcMain);
         pnlMain.add(pnlContent, BorderLayout.CENTER);
 
-        // NÚT XÁC NHẬN
+        // NÚT XÁC NHẬN[cite: 11]
         JButton btnLuu = new JButton("XÁC NHẬN THÊM PHIM");
         btnLuu.setBackground(new Color(76, 175, 80));
         btnLuu.setForeground(Color.WHITE);
@@ -178,7 +178,7 @@ public class ThemPhim_UI extends JPanel {
     private void xuLyThemTheLoaiNhanh() {
         String tenMoi = JOptionPane.showInputDialog(this, "Nhập tên thể loại mới:");
         if (tenMoi != null && !tenMoi.trim().isEmpty()) {
-            TheLoai tl = new TheLoai("", tenMoi); // DAO tự sinh mã TL
+            TheLoai tl = new TheLoai("", tenMoi);
             if (theLoaiDAO.themTheLoai(tl)) {
                 loadDataTheLoai();
                 cmbTheLoai.setSelectedItem(tl);
@@ -218,20 +218,27 @@ public class ThemPhim_UI extends JPanel {
                 return;
             }
 
-            // 1. XỬ LÝ POSTER
+            // 1. XỬ LÝ POSTER: Lưu vào cả src và bin để đồng bộ ngay lập tức[cite: 11]
             String tenAnh = "";
             if (fileAnhGoc != null) {
                 tenAnh = maPhim + ".jpg";
-                Path dest = Paths.get("src/img/" + tenAnh);
-                Files.createDirectories(dest.getParent());
-                Files.copy(fileAnhGoc.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
+                // Lưu vào src
+                Path destSrc = Paths.get("src/img/" + tenAnh);
+                Files.createDirectories(destSrc.getParent());
+                Files.copy(fileAnhGoc.toPath(), destSrc, StandardCopyOption.REPLACE_EXISTING);
+                
+                // Lưu vào bin (thư mục thực thi) để load được ngay
+                Path destBin = Paths.get("bin/img/" + tenAnh);
+                if (Files.exists(destBin.getParent())) {
+                    Files.copy(fileAnhGoc.toPath(), destBin, StandardCopyOption.REPLACE_EXISTING);
+                }
             }
 
-            // 2. LẤY DỮ LIỆU TỪ SPINNER VÀ COMBOBOX THỰC THỂ
+            // 2. LẤY DỮ LIỆU TỪ SPINNER VÀ COMBOBOX[cite: 11]
             TheLoai tl = (TheLoai) cmbTheLoai.getSelectedItem();
             int thoiLuong = (int) spnThoiLuong.getValue();
 
-            // 3. LẤY NGÀY
+            // 3. LẤY NGÀY[cite: 11]
             java.util.Date dateSelected = (java.util.Date) datePicker.getModel().getValue();
             if (dateSelected == null) {
                 JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày khởi chiếu!");
@@ -239,18 +246,18 @@ public class ThemPhim_UI extends JPanel {
             }
             LocalDate ngay = dateSelected.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-            // 4. TẠO ĐỐI TƯỢNG VỚI QUAN HỆ THỰC THỂ
+            // 4. TẠO ĐỐI TƯỢNG VÀ LƯU[cite: 11]
             Phim p = new Phim(maPhim, tenPhim, txtDaoDien.getText().trim(), 
                              tl, thoiLuong, ngay, txtMoTa.getText().trim(), tenAnh);
 
             if (phimDAO.themPhim(p)) {
                 JOptionPane.showMessageDialog(this, "Thêm phim " + tenPhim + " thành công!");
                 xoaTrang();
-                txtMa.setText(phimDAO.phatSinhMaPhimTuDong()); // Cập nhật mã cho phim kế tiếp
+                // Cập nhật mã phim mới để tránh lỗi trùng khóa chính[cite: 11]
+                txtMa.setText(phimDAO.phatSinhMaPhimTuDong()); 
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

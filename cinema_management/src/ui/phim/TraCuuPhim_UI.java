@@ -2,16 +2,18 @@ package ui.phim;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import entity.Phim;
+import entity.TheLoai;
 import dao.Phim_DAO;
+import dao.TheLoai_DAO;
 
 public class TraCuuPhim_UI extends JPanel {
 
-    // ========== HẰNG SỐ MÀU SẮC (Đồng bộ với tab Khách hàng) ==========
     private final Color MAU_NEN_TAB = new Color(48, 52, 56);
     private final Color MAU_THANH_TIM_KIEM = new Color(60, 64, 68);
     private final Color MAU_NHAN_XAM = new Color(100, 104, 124);
@@ -19,15 +21,16 @@ public class TraCuuPhim_UI extends JPanel {
     private final Color MAU_VIEN_INPUT = new Color(70, 72, 87);
     private final Color MAU_VANG = new Color(255, 193, 7);
 
-    // ========== COMPONENTS ==========
     private JPanel pnlGridPhim; 
     private JLabel lblSoLuong;
     private JTextField txtTimMa, txtTimTen;
-    private JComboBox<String> cmbTheLoai;
+    private JComboBox<Object> cmbTheLoai;
     private Phim_DAO phimDAO;
+    private TheLoai_DAO theLoaiDAO;
 
     public TraCuuPhim_UI() {
         phimDAO = new Phim_DAO();
+        theLoaiDAO = new TheLoai_DAO();
         setLayout(new BorderLayout());
         setBackground(MAU_NEN_TAB);
 
@@ -35,7 +38,7 @@ public class TraCuuPhim_UI extends JPanel {
         panelChinh.setBackground(MAU_NEN_TAB);
         panelChinh.setBorder(new EmptyBorder(20, 25, 20, 25));
 
-        // 1. THANH ĐIỀU KHIỂI (Header đồng bộ tab Khách hàng)
+        // 1. THANH ĐIỀU KHIỂI
         JPanel pnlDieuKhien = new JPanel(new BorderLayout(20, 0));
         pnlDieuKhien.setBackground(MAU_NEN_TAB);
 
@@ -44,7 +47,9 @@ public class TraCuuPhim_UI extends JPanel {
 
         txtTimMa = new JTextField(8);
         txtTimTen = new JTextField(12);
-        cmbTheLoai = new JComboBox<>(new String[]{"Tất cả", "Hành động", "Tình cảm", "Kinh dị", "Hoạt hình", "Gia đình"});
+        
+        cmbTheLoai = new JComboBox<>();
+        loadDataTheLoai();
 
         pnlTimKiem.add(taoWrapperInput("Mã phim:", txtTimMa, 120));
         pnlTimKiem.add(taoWrapperInput("Tên phim:", txtTimTen, 160));
@@ -52,9 +57,16 @@ public class TraCuuPhim_UI extends JPanel {
 
         JPanel pnlNut = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         pnlNut.setBackground(MAU_NEN_TAB);
-        pnlNut.add(taoNutChucNang("Thêm", new Color(76, 175, 80)));
-        pnlNut.add(taoNutChucNang("Cập nhật", new Color(255, 193, 7)));
-        pnlNut.add(taoNutChucNang("Làm mới", new Color(33, 150, 243)));
+        
+        JButton btnLamMoi = taoNutChucNang("Làm mới", new Color(33, 150, 243));
+        btnLamMoi.addActionListener(e -> {
+            txtTimMa.setText("");
+            txtTimTen.setText("");
+            loadDataTheLoai(); 
+            cmbTheLoai.setSelectedIndex(0);
+            lamMoiGrid();
+        });
+        pnlNut.add(btnLamMoi);
 
         pnlDieuKhien.add(pnlTimKiem, BorderLayout.WEST);
         pnlDieuKhien.add(pnlNut, BorderLayout.EAST);
@@ -70,7 +82,7 @@ public class TraCuuPhim_UI extends JPanel {
         pnlTopWrap.add(lblSoLuong, BorderLayout.SOUTH);
         panelChinh.add(pnlTopWrap, BorderLayout.NORTH);
 
-        // 3. VÙNG LƯỚI CARD PHIM (Ảnh Vuông)
+        // 3. VÙNG LƯỚI CARD PHIM
         pnlGridPhim = new JPanel(new GridLayout(0, 6, 20, 25)); 
         pnlGridPhim.setBackground(MAU_NEN_TAB);
 
@@ -86,7 +98,6 @@ public class TraCuuPhim_UI extends JPanel {
 
         add(panelChinh);
 
-        // Sự kiện Live Search
         KeyAdapter search = new KeyAdapter() {
             @Override public void keyReleased(KeyEvent e) { lamMoiGrid(); }
         };
@@ -97,8 +108,22 @@ public class TraCuuPhim_UI extends JPanel {
         lamMoiGrid();
     }
 
+    private void loadDataTheLoai() {
+        cmbTheLoai.removeAllItems();
+        cmbTheLoai.addItem("Tất cả"); 
+        List<TheLoai> ds = theLoaiDAO.getAllTheLoai();
+        for (TheLoai tl : ds) {
+            cmbTheLoai.addItem(tl); 
+        }
+    }
+
     private void lamMoiGrid() {
-        List<Phim> ds = phimDAO.docDanhSachPhim(); 
+        String ma = txtTimMa.getText().trim();
+        String ten = txtTimTen.getText().trim();
+        String theLoai = cmbTheLoai.getSelectedItem().toString();
+
+        List<Phim> ds = phimDAO.timKiemPhim(ma, ten, theLoai); 
+        
         pnlGridPhim.removeAll();
         lblSoLuong.setText("Số phim khởi chiếu: " + ds.size());
         for (Phim p : ds) {
@@ -113,19 +138,28 @@ public class TraCuuPhim_UI extends JPanel {
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBackground(new Color(31, 32, 44)); 
         card.setBorder(new LineBorder(MAU_VIEN_INPUT, 1));
-        // Chỉnh kích thước Card cho Poster đứng (Chữ nhật đứng/Vuông)
         card.setPreferredSize(new Dimension(180, 310));
         card.setMaximumSize(new Dimension(180, 310));
 
-        // Ảnh Poster VUÔNG/CHỮ NHẬT
         JLabel lblImg = new JLabel("", SwingConstants.CENTER);
         lblImg.setAlignmentX(Component.CENTER_ALIGNMENT);
         lblImg.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        java.net.URL imgURL = getClass().getResource("/img/" + p.getDuongDanAnh());
-        if (imgURL != null) {
-            ImageIcon icon = new ImageIcon(imgURL);
-            // Scale ảnh vuông vức (160x220 là tỉ lệ poster chuẩn)
+        // TỐI ƯU HÓA LOAD ẢNH: Kiểm tra cả Resource và File hệ thống
+        String imagePath = "src/img/" + p.getDuongDanAnh();
+        File fileImg = new File(imagePath);
+        ImageIcon icon = null;
+
+        if (fileImg.exists()) {
+            icon = new ImageIcon(imagePath); // Ưu tiên đọc trực tiếp từ thư mục src
+        } else {
+            java.net.URL imgURL = getClass().getResource("/img/" + p.getDuongDanAnh());
+            if (imgURL != null) {
+                icon = new ImageIcon(imgURL);
+            }
+        }
+
+        if (icon != null) {
             Image img = icon.getImage().getScaledInstance(160, 220, Image.SCALE_SMOOTH);
             lblImg.setIcon(new ImageIcon(img));
         } else {
@@ -133,14 +167,12 @@ public class TraCuuPhim_UI extends JPanel {
             lblImg.setForeground(Color.GRAY);
         }
 
-        // Tên phim
         JLabel lblTen = new JLabel(p.getTenPhim().toUpperCase(), SwingConstants.CENTER);
         lblTen.setForeground(MAU_CHU_CHUNG);
         lblTen.setFont(new Font("Segoe UI", Font.BOLD, 12));
         lblTen.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Phụ đề
-        JLabel lblSub = new JLabel(p.getThoiLuong() + " phút | " + p.getTheLoai(), SwingConstants.CENTER);
+        JLabel lblSub = new JLabel(p.getThoiLuong() + " phút | " + p.getTheLoai().getTenTheLoai(), SwingConstants.CENTER);
         lblSub.setForeground(MAU_VANG);
         lblSub.setFont(new Font("Segoe UI", Font.PLAIN, 10));
         lblSub.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -151,7 +183,6 @@ public class TraCuuPhim_UI extends JPanel {
         card.add(lblSub);
         card.add(Box.createVerticalStrut(10));
         
-        // Hiệu ứng Hover nhẹ
         card.addMouseListener(new MouseAdapter() {
             @Override public void mouseEntered(MouseEvent e) { card.setBorder(new LineBorder(MAU_VANG, 1)); }
             @Override public void mouseExited(MouseEvent e) { card.setBorder(new LineBorder(MAU_VIEN_INPUT, 1)); }
@@ -160,7 +191,6 @@ public class TraCuuPhim_UI extends JPanel {
         return card;
     }
 
-    // Các hàm Wrapper (Đồng bộ tab Khách hàng)
     private JPanel taoWrapperInput(String label, JComponent comp, int width) {
         JPanel p = new JPanel(new BorderLayout());
         p.setBackground(MAU_NEN_TAB);

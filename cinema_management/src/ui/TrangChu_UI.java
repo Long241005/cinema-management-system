@@ -7,6 +7,7 @@ import entity.Phim;
 import entity.PhongChieu;
 import ui.khachhang.ThongKeKhachHang_UI;
 import ui.khuyenmai.ThongKeKhuyenMai_UI;
+import ui.banve.BanVe_UI;
 import ui.ghe.ThemGhe_UI;
 import ui.hoadon.ThongKeHoaDon_UI;
 import ui.hoadon.TraCuuHoaDon_UI;
@@ -14,6 +15,10 @@ import ui.khuyenmai.TraCuuKhuyenMai_UI;
 import ui.nhanvien.XoaNhanVien_UI;
 import ui.phongchieu.CapNhatPhong_UI;
 import ui.phongchieu.XoaPhong_UI;
+import ui.suatchieu.CapNhatSuatChieu_UI;
+import ui.suatchieu.ThemSuatChieu_UI;
+import ui.suatchieu.TraCuuSuatChieu_UI;
+import ui.suatchieu.XoaSuatChieu_UI;
 import ui.phongchieu.ThemPhong_UI;
 import ui.phongchieu.TraCuuPhong_UI;
 import ui.khachhang.CapNhatKhachHang_UI;
@@ -188,10 +193,14 @@ public class TrangChu_UI extends JFrame {
 
     private void themCacMenuItem() {
         themMenuItem("Hệ thống", "/IMG/setting_32px_v2.png", null, true);
+        themMenuItem("Bán vé", "/IMG/film-roll.png", 
+                Arrays.asList("Bán vé"), false);
         themMenuItem("Phim", "/IMG/film-roll.png", 
             Arrays.asList("Tra cứu phim", "Thêm phim mới", "Cập nhật phim", "Thống kê phim"), false);
         themMenuItem("Phòng chiếu", "/IMG/film-roll.png", 
             Arrays.asList("Cập nhật phòng", "Thêm phòng", "Tra cứu phòng","Xóa phòng"), false);
+        themMenuItem("Suất Chiếu", "/IMG/film-roll.png", 
+                Arrays.asList("Tra cứu suất chiếu","Thêm suất chiếu","Cập nhật suất chiếu","Xóa suất chiếu"), false);
         themMenuItem("Ghế", "/IMG/film-roll.png", // Bạn có thể thay icon khác nếu có
                 Arrays.asList("Tra cứu ghế", "Thêm ghế mới", "Cập nhật ghế"), false);
         if (services.AuthService.isAdmin()) {
@@ -529,6 +538,23 @@ public class TrangChu_UI extends JFrame {
             case "Thống kê khuyến mãi":
                 mainContentPanel.add(new ThongKeKhuyenMai_UI(), BorderLayout.CENTER);
                 break;
+            case "Thêm suất chiếu":
+                mainContentPanel.add(new ThemSuatChieu_UI(), BorderLayout.CENTER);
+                break;
+            case "Tra cứu suất chiếu":
+                mainContentPanel.add(new TraCuuSuatChieu_UI(), BorderLayout.CENTER);
+                break;
+            case "Xóa suất chiếu":
+                mainContentPanel.add(new XoaSuatChieu_UI(), BorderLayout.CENTER);
+                break;
+            case "Cập nhật suất chiếu":
+                mainContentPanel.add(new CapNhatSuatChieu_UI(), BorderLayout.CENTER);
+                break;
+            case "Bán vé":
+                mainContentPanel.add(new BanVe_UI(), BorderLayout.CENTER);
+                break;
+                
+                
             default:
                 JLabel contentLabel = new JLabel("Nội dung cho: " + tenTab, SwingConstants.CENTER);
                 contentLabel.setForeground(MAU_CHU_TRANG);
@@ -615,14 +641,7 @@ public class TrangChu_UI extends JFrame {
         mainContentPanel.repaint();
     }
     
-//    public void hienThiTrangCapNhatPhong(PhongChieu phong) {
-//        mainContentPanel.removeAll();
-//        CapNhatPhong_UI panelCapNhat = new CapNhatPhong_UI();
-//        panelCapNhat.chonPhongDeCapNhat(phong.getMaPhong());
-//        mainContentPanel.add(panelCapNhat, BorderLayout.CENTER);
-//        mainContentPanel.revalidate();
-//        mainContentPanel.repaint();
-//    }
+
     
     
     public void hienThiTrangCapNhatPhong(PhongChieu phong) {

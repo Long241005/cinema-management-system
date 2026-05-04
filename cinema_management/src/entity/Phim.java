@@ -117,8 +117,6 @@ public class Phim implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Phim [maPhim=" + maPhim + ", tenPhim=" + tenPhim + ", daoDien=" + daoDien + ", theLoai=" + theLoai
-				+ ", thoiLuong=" + thoiLuong + ", ngayKhoiChieu=" + ngayKhoiChieu + ", moTa=" + moTa + ", duongDanAnh="
-				+ duongDanAnh + "]";
+		return   tenPhim  ;
 	}
 }
