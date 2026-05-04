@@ -9,6 +9,10 @@ public class NhanVien {
     private String email;
     private String diaChi;
     private String chucVu;
+    private String matKhau;
+
+    public String getMatKhau() { return matKhau; }
+    public void setMatKhau(String matKhau) { this.matKhau = matKhau; }
 
     public NhanVien() {
     }

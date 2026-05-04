@@ -59,6 +59,7 @@ CREATE TABLE SuatChieu (
 
 -- 5. Bảng NhanVien 
 CREATE TABLE NhanVien (
+    matkhau VARCHAR(20),
     maNV VARCHAR(20) PRIMARY KEY,
     tenNV NVARCHAR(255) NOT NULL,
     gioiTinh BIT, 
@@ -300,3 +301,8 @@ INSERT INTO KhuyenMai (maKM, tenKhuyenMai, phanTramGiam, ngayBatDau, ngayKetThuc
 ('KM008', N'Ưu đãi Halloween', 35.00, '2026-10-25', '2026-10-31'),
 ('KM009', N'Black Friday Sale', 40.00, '2026-11-25', '2026-11-30'),
 ('KM010', N'Giáng Sinh an lành', 50.00, '2026-12-20', '2026-12-31');
+UPDATE NhanVien SET matKhau = 'admin123' WHERE chucVu = N'Quản lý';
+UPDATE NhanVien SET matKhau = '123' WHERE chucVu = N'Nhân viên bán vé';
+ALTER TABLE NhanVien
+    ADD matKhau VARCHAR(100);
+SELECT * FROM NhanVien

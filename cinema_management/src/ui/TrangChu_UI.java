@@ -194,8 +194,13 @@ public class TrangChu_UI extends JFrame {
             Arrays.asList("Cập nhật phòng", "Thêm phòng", "Tra cứu phòng","Xóa phòng"), false);
         themMenuItem("Ghế", "/IMG/film-roll.png", // Bạn có thể thay icon khác nếu có
                 Arrays.asList("Tra cứu ghế", "Thêm ghế mới", "Cập nhật ghế"), false);
-        themMenuItem("Nhân viên", "/IMG/nhanvien_32px_v2.png", 
-            Arrays.asList("Tra cứu nhân viên", "Thêm nhân viên", "Cập nhật nhân viên","Xóa nhân viên"), false);
+        if (services.AuthService.isAdmin()) {
+            themMenuItem("Nhân viên", "/IMG/nhanvien_32px_v2.png",
+                    Arrays.asList("Tra cứu nhân viên",
+                            "Thêm nhân viên",
+                            "Cập nhật nhân viên",
+                            "Xóa nhân viên"), false);
+        }
         themMenuItem("Khách hàng", "/IMG/khachhang_32px_v2.png", 
             Arrays.asList("Tra cứu khách hàng", "Thêm khách hàng", "Cập nhật khách hàng", "Thống kê khách hàng"), false);
         themMenuItem("Hóa đơn", "/IMG/hoadon_32px_v2.png", 

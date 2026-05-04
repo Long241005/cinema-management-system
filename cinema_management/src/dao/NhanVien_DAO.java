@@ -50,6 +50,34 @@ public class NhanVien_DAO {
 
         return ds;
     }
+    public NhanVien dangNhap(String maNV, String matKhau) {
+
+        String sql = "SELECT * FROM NhanVien WHERE maNV = ? AND matKhau = ?";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setString(1, maNV);
+            ps.setString(2, matKhau);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                NhanVien nv = new NhanVien();
+
+                nv.setMaNV(rs.getString("maNV"));
+                nv.setTenNV(rs.getString("tenNV"));
+                nv.setChucVu(rs.getString("chucVu"));
+
+                return nv;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
     public List<NhanVien> timKiemTheoMa(String ma) {
         List<NhanVien> ds = new ArrayList<>();
@@ -78,6 +106,7 @@ public class NhanVien_DAO {
 
         return ds;
     }
+
 
     public List<NhanVien> timKiemTheoSDT(String sdt) {
         List<NhanVien> ds = new ArrayList<>();
